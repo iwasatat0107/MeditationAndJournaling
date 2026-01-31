@@ -70,7 +70,7 @@ export const storage = {
 
     let streak = 0;
     const today = new Date().toISOString().split('T')[0];
-    let currentDate = new Date(today);
+    const currentDate = new Date(today);
 
     for (let i = 0; i < dailyStats.length; i++) {
       const checkDate = currentDate.toISOString().split('T')[0];
