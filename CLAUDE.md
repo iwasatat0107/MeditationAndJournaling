@@ -174,15 +174,21 @@ rm -rf .next
 
 ---
 
-#### Step 6: PR作成とマージ
+#### Step 6: PR確認・作成とマージ
 
 **AIの処理**:
-1. GitHub MCPでPRを作成:
+1. PRの有無を自動確認:
+   ```bash
+   gh pr list --head <現在のブランチ>
+   ```
+   - PRが既に存在する場合: ステップ3へ
+   - PRが存在しない場合: ステップ2へ
+2. GitHub MCPでPRを作成（PRがない場合のみ）:
    - タイトル: `feat: 瞑想タイマー機能の実装 (#X)`
    - 本文: 変更内容、テスト結果、スクリーンショット（必要に応じて）
    - ラベル: `feature`, `enhancement`
    - ベースブランチ: `develop`
-2. PR URLをユーザーに提示
+3. PR URLをユーザーに提示
 
 **ユーザー操作**:
 ```
@@ -237,6 +243,39 @@ AI: PR作成 → PR URL提示
 AI: PRマージ、ブランチ削除
 AI: 「Issue #3の対応が完了しました」
 ```
+
+---
+
+#### Step 7: develop → main リリース（必要に応じて）
+
+**AIの処理**:
+1. `develop`ブランチへのコミット・プッシュ後、自動的にPRの有無を確認:
+   ```bash
+   gh pr list --head develop --base main
+   git log origin/main..origin/develop --oneline
+   ```
+2. PRが存在しない かつ mainとの差分がある場合:
+   - 差分内容を要約
+   - PR作成を提案（タイトル、本文を自動生成）
+   - ユーザーに承認を求める
+3. ユーザー承認後、GitHub MCPでPR作成
+4. PR URLをユーザーに提示
+
+**ユーザー操作**:
+```
+PRを確認して「マージ承認」
+```
+
+**AIの処理**:
+5. 承認後、GitHub MCPでPRをマージ
+6. マージ後、ローカルのmainブランチを更新
+   ```bash
+   git checkout main
+   git pull origin main
+   git checkout develop
+   ```
+
+**重要**: このステップは、`develop`に直接コミットした場合や、複数のfeatureがdevelopに統合された後のリリース時に実行されます。
 
 ---
 
