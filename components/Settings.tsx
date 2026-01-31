@@ -7,9 +7,9 @@ interface SettingsProps {
   onClose: () => void;
 }
 
-const MEDITATION_OPTIONS = [1, 3, 5, 10, 15, 20, 30];
-const JOURNALING_OPTIONS = [30, 60, 90, 120, 180];
-const BREAK_OPTIONS = [5, 10, 15, 20, 30];
+const MEDITATION_OPTIONS = [2, 5, 7, 10, 15];
+const JOURNALING_OPTIONS = [60, 120, 300, 420, 600];
+const BREAK_OPTIONS = [5, 10, 15];
 
 export default function Settings({ onClose }: SettingsProps) {
   const [appSettings, setAppSettings] = useState<AppSettings>(settings.get());
