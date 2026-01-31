@@ -256,6 +256,14 @@ AI: 「Issue #3の対応が完了しました」
 1. `feature/*` または `bugfix/*` → `develop`: 機能追加・バグ修正時
 2. `develop` → `main`: リリース時（安定版）
 
+**運用ルール**:
+1. **常駐ブランチの保護**: `main` と `develop` は削除禁止（常に保持）
+2. **作業ブランチのライフサイクル**:
+   - `feature/*`, `bugfix/*` はタスク完了後に必ず削除
+   - PRマージ後、ローカルブランチを即座に削除: `git branch -d feature/issue-X-...`
+3. **ローカルの理想状態**: タスク終了後は `main` と `develop` の2つのみ残す
+4. **差分の解消**: 作業終了時は `git status` で "working tree clean" の状態にする
+
 ---
 
 ## プロジェクト構造
