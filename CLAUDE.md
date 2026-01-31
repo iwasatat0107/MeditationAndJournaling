@@ -5,6 +5,7 @@
 - Next.js 15 (App Router) + TypeScript
 - Tailwind CSS
 - LocalStorage（永続化）
+- Jest + React Testing Library（テスト）
 
 ---
 
@@ -14,6 +15,11 @@
 # 開発サーバー
 npm run dev  # http://localhost:3000
 
+# テスト
+npm test              # テスト実行
+npm run test:watch    # テスト監視モード
+npm run test:coverage # カバレッジ確認
+
 # ビルド・起動
 npm run build
 npm start
@@ -21,6 +27,88 @@ npm start
 # キャッシュクリア
 rm -rf .next
 ```
+
+---
+
+## Development Workflow
+
+このプロジェクトでは **TDD（テスト駆動開発）** を採用します。
+
+### TDDサイクル（Red-Green-Refactor）
+
+1. **Red（失敗するテストを書く）**
+   - 実装前に必ずテストコードを書く
+   - テストが失敗することを確認する
+
+2. **Green（最小限の実装でテストを通す）**
+   - テストが成功する最小限のコードを書く
+   - テストが全て通ることを確認する
+
+3. **Refactor（リファクタリング）**
+   - テストが通った後にコードを整理する
+   - テストが引き続き通ることを確認する
+
+### 開発の流れ
+
+```bash
+# 1. feature ブランチを作成
+git checkout develop
+git pull origin develop
+git checkout -b feature-timer
+
+# 2. テストを書く（Red）
+# 例: components/__tests__/MeditationTimer.test.tsx
+
+# 3. テストを実行（失敗することを確認）
+npm test
+
+# 4. 実装する（Green）
+# 例: components/MeditationTimer.tsx
+
+# 5. テストを実行（成功することを確認）
+npm test
+
+# 6. リファクタリング（Refactor）
+# コードを整理・改善
+
+# 7. 最終確認
+npm test
+npm run build  # ビルドエラーがないか確認
+
+# 8. コミット前に変更内容を要約
+# - 何を変更したか
+# - なぜ変更したか
+# - テスト結果
+# ※ 必ずレビュアー（ユーザー）に確認を求めること
+
+# 9. コミット（承認後）
+git add .
+git commit -m "Add meditation timer with tests"
+
+# 10. プッシュ
+git push origin feature-timer
+```
+
+### コミット前のチェックリスト
+
+- [ ] テストコードを書いた
+- [ ] 全てのテストが通っている
+- [ ] ビルドエラーがない
+- [ ] 変更内容を要約してレビュアーに確認した
+- [ ] レビュアーから承認を得た
+
+### ブランチ戦略
+
+- `main`: 本番環境用（安定版のみ）
+- `develop`: 開発用メインブランチ
+- `feature-*`: 機能開発用（例: `feature-timer`, `feature-history`）
+- `bugfix-*`: バグ修正用（例: `bugfix-timer-reset`）
+
+### プルリクエスト
+
+1. `feature-*` → `develop`: 機能追加時
+2. `bugfix-*` → `develop`: バグ修正時
+3. `develop` → `main`: リリース時（安定版）
 
 ---
 
@@ -37,10 +125,12 @@ components/
   JournalingTimer.tsx   # メモ書き（青）
   History.tsx           # 履歴・統計
   Settings.tsx          # 設定モーダル
+  __tests__/            # コンポーネントのテスト
 
 lib/
   storage.ts         # Session管理
   settings.ts        # AppSettings管理
+  __tests__/         # ユーティリティのテスト
 
 types/
   index.ts           # Session, AppSettings, DailyStats
