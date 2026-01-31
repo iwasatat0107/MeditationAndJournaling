@@ -89,6 +89,94 @@ git commit -m "Add meditation timer with tests"
 git push origin feature-timer
 ```
 
+### GitHub MCP連携ワークフロー（自動化）
+
+**前提**: GitHub MCPサーバーが設定済み（環境変数 `GITHUB_TOKEN` 必須）
+
+#### 1. Issue作成から開発開始まで
+
+```
+AIに依頼: 「Issueを作成してください: 瞑想タイマー機能の実装」
+  ↓
+AI が GitHub MCP で Issue 作成
+  ↓
+AI が Issue番号に基づいて feature ブランチを自動作成
+  例: feature-123-meditation-timer
+  ↓
+開発開始
+```
+
+#### 2. TDDサイクルでの開発
+
+```
+AI がテストコードを作成
+  ↓
+テスト実行（Red）
+  ↓
+AI が実装コードを作成
+  ↓
+テスト実行（Green）
+  ↓
+AI がリファクタリング提案
+  ↓
+ユーザーが承認
+  ↓
+AI がリファクタリング実施
+```
+
+#### 3. コミット前の確認フロー
+
+```
+AI が変更内容を要約:
+  - 変更したファイル一覧
+  - 追加/修正/削除した機能
+  - テスト結果（全て通過/失敗件数）
+  - ビルド結果
+  ↓
+ユーザーに承認を求める
+  ↓
+ユーザーが承認
+  ↓
+AI が自動コミット・プッシュ
+```
+
+#### 4. PR作成からマージまで
+
+```
+AI が GitHub MCP で PR 作成:
+  - タイトル: Issue番号 + 概要
+  - 本文: 変更内容詳細、テスト結果
+  - ラベル: feature, enhancement など
+  ↓
+ユーザーに PR内容の確認を求める
+  ↓
+ユーザーが承認
+  ↓
+AI が PR を develop にマージ
+  ↓
+feature ブランチを削除
+```
+
+#### 5. 完全自動化フロー（例）
+
+**ユーザーの操作**:
+1. 「瞑想タイマー機能を実装してください」と依頼
+2. AI の提案内容を3回承認（テスト → 実装 → PR）
+
+**AI の自動実行**:
+1. ✅ Issue作成（GitHub MCP）
+2. ✅ featureブランチ作成
+3. ✅ テストコード作成
+4. ✅ テスト実行・確認
+5. ✅ 実装コード作成
+6. ✅ テスト実行・確認
+7. ✅ コミット・プッシュ
+8. ✅ PR作成（GitHub MCP）
+9. ✅ PRマージ（GitHub MCP）
+10. ✅ ブランチ削除
+
+---
+
 ### コミット前のチェックリスト
 
 - [ ] テストコードを書いた
@@ -328,6 +416,65 @@ localStorage.getItem('meditation-journaling-settings')
 
 // データクリア
 localStorage.clear()
+```
+
+---
+
+## GitHub MCP設定
+
+### 初回セットアップ
+
+1. **GitHub Personal Access Token (PAT) の作成**
+   - https://github.com/settings/tokens にアクセス
+   - "Generate new token (classic)" をクリック
+   - 権限を選択:
+     - `repo` (すべて) - リポジトリへのフルアクセス
+     - `workflow` - GitHub Actionsの管理
+   - トークンを生成してコピー
+
+2. **環境変数の設定**
+   ```bash
+   # .zshrc に追加（macOS/Linux）
+   echo 'export GITHUB_TOKEN="ghp_your_token_here"' >> ~/.zshrc
+   source ~/.zshrc
+   ```
+
+3. **MCP サーバーの追加**
+   ```bash
+   # GitHub MCP サーバーを追加
+   claude mcp add github -- npx -y @modelcontextprotocol/server-github
+   ```
+
+4. **設定の確認**
+   ```bash
+   # MCP サーバー一覧を確認
+   claude mcp list
+
+   # GitHub MCP の詳細を確認
+   claude mcp get github
+   ```
+
+### 利用可能な機能
+
+- **Issue管理**: 作成、更新、リスト、コメント追加
+- **PR管理**: 作成、マージ、レビュー、ステータス管理
+- **ブランチ管理**: 自動/手動作成
+- **ファイル操作**: 作成、更新、複数ファイルのコミット
+- **検索機能**: コード、Issue、PR、ユーザー検索
+
+### トラブルシューティング
+
+```bash
+# MCP サーバーが接続できない場合
+# 1. 環境変数を確認
+echo $GITHUB_TOKEN
+
+# 2. MCP サーバーを再起動
+claude mcp remove github
+claude mcp add github -- npx -y @modelcontextprotocol/server-github
+
+# 3. 接続状態を確認
+claude mcp list
 ```
 
 ---
