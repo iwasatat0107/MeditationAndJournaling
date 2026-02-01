@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { storage } from '@/lib/storage';
 import { settings } from '@/lib/settings';
 
@@ -33,6 +33,51 @@ export default function JournalingTimer({ onComplete }: { onComplete?: () => voi
     }
   }, []);
 
+  const handleComplete = useCallback(() => {
+    setIsRunning(false);
+
+    const endTime = new Date();
+    const totalDuration = startTimeRef.current
+      ? Math.floor((endTime.getTime() - startTimeRef.current.getTime()) / 1000)
+      : duration * MAX_PAGES + breakDuration * (MAX_PAGES - 1);
+
+    const session = {
+      id: crypto.randomUUID(),
+      type: 'journaling' as const,
+      duration: totalDuration,
+      completedAt: new Date().toISOString(),
+    };
+    storage.saveSession(session);
+    onComplete?.();
+
+    // リセット
+    setCurrentPage(1);
+    setPhase('writing');
+    setTimeLeft(0);
+  }, [duration, breakDuration, onComplete]);
+
+  const handlePhaseComplete = useCallback(() => {
+    if (completeAudioRef.current) {
+      completeAudioRef.current.play().catch(err => console.error('Audio play failed:', err));
+    }
+
+    if (phase === 'writing') {
+      // 書き込み終了 → 休憩へ
+      if (currentPage < MAX_PAGES) {
+        setPhase('break');
+        setTimeLeft(breakDuration);
+      } else {
+        // 全ページ完了
+        handleComplete();
+      }
+    } else {
+      // 休憩終了 → 次のページの書き込みへ
+      setPhase('writing');
+      setCurrentPage(prev => prev + 1);
+      setTimeLeft(duration);
+    }
+  }, [phase, currentPage, breakDuration, duration, handleComplete]);
+
   useEffect(() => {
     if (isRunning && timeLeft > 0) {
       intervalRef.current = setInterval(() => {
@@ -63,52 +108,7 @@ export default function JournalingTimer({ onComplete }: { onComplete?: () => voi
         clearInterval(intervalRef.current);
       }
     };
-  }, [isRunning, timeLeft]);
-
-  const handlePhaseComplete = () => {
-    if (completeAudioRef.current) {
-      completeAudioRef.current.play().catch(err => console.error('Audio play failed:', err));
-    }
-
-    if (phase === 'writing') {
-      // 書き込み終了 → 休憩へ
-      if (currentPage < MAX_PAGES) {
-        setPhase('break');
-        setTimeLeft(breakDuration);
-      } else {
-        // 全ページ完了
-        handleComplete();
-      }
-    } else {
-      // 休憩終了 → 次のページの書き込みへ
-      setPhase('writing');
-      setCurrentPage(prev => prev + 1);
-      setTimeLeft(duration);
-    }
-  };
-
-  const handleComplete = () => {
-    setIsRunning(false);
-
-    const endTime = new Date();
-    const totalDuration = startTimeRef.current
-      ? Math.floor((endTime.getTime() - startTimeRef.current.getTime()) / 1000)
-      : duration * MAX_PAGES + breakDuration * (MAX_PAGES - 1);
-
-    const session = {
-      id: crypto.randomUUID(),
-      type: 'journaling' as const,
-      duration: totalDuration,
-      completedAt: new Date().toISOString(),
-    };
-    storage.saveSession(session);
-    onComplete?.();
-
-    // リセット
-    setCurrentPage(1);
-    setPhase('writing');
-    setTimeLeft(0);
-  };
+  }, [isRunning, timeLeft, handlePhaseComplete]);
 
   const handleStart = () => {
     const appSettings = settings.get();
@@ -177,6 +177,7 @@ export default function JournalingTimer({ onComplete }: { onComplete?: () => voi
             {Array.from({ length: MAX_PAGES }, (_, i) => (
               <div
                 key={i}
+                data-testid="page-indicator"
                 className={`w-4 h-4 rounded-full transition-all ${
                   i + 1 < currentPage
                     ? 'bg-blue-600'

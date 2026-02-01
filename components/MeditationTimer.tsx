@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { storage } from '@/lib/storage';
 import { settings } from '@/lib/settings';
 
@@ -18,6 +18,24 @@ export default function MeditationTimer({ onComplete }: { onComplete?: () => voi
       setDuration(settings.get().meditationDuration);
     }
   }, []);
+
+  const handleComplete = useCallback(() => {
+    setIsRunning(false);
+    setIsPaused(false);
+
+    if (audioRef.current) {
+      audioRef.current.play().catch(err => console.error('Audio play failed:', err));
+    }
+
+    const session = {
+      id: crypto.randomUUID(),
+      type: 'meditation' as const,
+      duration: duration * 60,
+      completedAt: new Date().toISOString(),
+    };
+    storage.saveSession(session);
+    onComplete?.();
+  }, [duration, onComplete]);
 
   useEffect(() => {
     if (isRunning && !isPaused && timeLeft > 0) {
@@ -41,25 +59,7 @@ export default function MeditationTimer({ onComplete }: { onComplete?: () => voi
         clearInterval(intervalRef.current);
       }
     };
-  }, [isRunning, isPaused, timeLeft]);
-
-  const handleComplete = () => {
-    setIsRunning(false);
-    setIsPaused(false);
-
-    if (audioRef.current) {
-      audioRef.current.play().catch(err => console.error('Audio play failed:', err));
-    }
-
-    const session = {
-      id: crypto.randomUUID(),
-      type: 'meditation' as const,
-      duration: duration * 60,
-      completedAt: new Date().toISOString(),
-    };
-    storage.saveSession(session);
-    onComplete?.();
-  };
+  }, [isRunning, isPaused, timeLeft, handleComplete]);
 
   const handleStart = () => {
     const currentDuration = settings.get().meditationDuration;
