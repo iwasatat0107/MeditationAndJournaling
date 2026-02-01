@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
+
 import MeditationTimer from '../MeditationTimer';
 import { storage } from '@/lib/storage';
 import { settings } from '@/lib/settings';

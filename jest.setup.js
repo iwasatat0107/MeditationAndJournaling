@@ -29,3 +29,6 @@ Object.defineProperty(global, 'crypto', {
     randomUUID: () => 'test-uuid-' + Math.random().toString(36).substring(2, 15),
   },
 })
+
+// Mock window.confirm
+global.confirm = jest.fn(() => true)
