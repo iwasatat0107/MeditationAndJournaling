@@ -72,7 +72,8 @@ export const storage = {
     const today = new Date().toISOString().split('T')[0];
     const currentDate = new Date(today);
 
-    for (let i = 0; i < dailyStats.length; i++) {
+    // 最大365日分チェック（dailyStats.lengthだと今日がない場合に不足する）
+    for (let i = 0; i < 365; i++) {
       const checkDate = currentDate.toISOString().split('T')[0];
       const hasSession = dailyStats.some(stat => stat.date === checkDate);
 
