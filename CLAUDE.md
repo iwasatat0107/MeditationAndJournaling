@@ -2,10 +2,21 @@
 
 ## 技術スタック
 
+### フロントエンド
 - Next.js 15 (App Router) + TypeScript
-- Tailwind CSS
-- LocalStorage（永続化）
+- Tailwind CSS（インラインクラスのみ、外部CSS禁止）
 - Jest + React Testing Library（テスト）
+
+### バックエンド・データ
+- NextAuth.js v5 (beta.30) — Credentials認証、JWT セッション
+- Supabase PostgreSQL — データベース
+- Drizzle ORM — スキーマ定義・マイグレーション
+- bcryptjs — パスワードハッシュ化
+- Zod — バリデーション
+
+### 永続化
+- LocalStorage（現時点の永続化）
+- PostgreSQL（移行中、Drizzle ORM経由）
 
 ---
 
@@ -23,6 +34,12 @@ npm run test:coverage # カバレッジ確認
 # ビルド・起動
 npm run build
 npm start
+
+# データベース
+npm run db:generate   # マイグレーション生成
+npm run db:migrate    # マイグレーション実行
+npm run db:push       # スキーマプッシュ
+npm run db:studio     # Drizzle Studio起動
 
 # キャッシュクリア
 rm -rf .next
@@ -309,24 +326,39 @@ PRを確認して「マージ承認」
 
 ```
 app/
-  page.tsx           # タブ切り替え、Settings表示
-  layout.tsx         # メタデータ
-  globals.css        # Tailwind
+  page.tsx                          # タブ切り替え、Settings表示
+  layout.tsx                        # メタデータ
+  globals.css                       # Tailwind
+  api/
+    auth/
+      [...nextauth]/route.ts        # NextAuth.js ルートハンドラ
+
+auth.ts                             # NextAuth.js 設定（Credentialsプロバイダー）
 
 components/
-  MeditationTimer.tsx   # 瞑想（紫）
-  JournalingTimer.tsx   # メモ書き（青）
-  History.tsx           # 履歴・統計
-  Settings.tsx          # 設定モーダル
-  __tests__/            # コンポーネントのテスト
+  MeditationTimer.tsx               # 瞑想タイマー（紫）
+  JournalingTimer.tsx               # メモ書きタイマー（青）
+  History.tsx                       # 履歴・統計
+  Settings.tsx                      # 設定モーダル
+  __tests__/                        # コンポーネントテスト（4ファイル）
 
 lib/
-  storage.ts         # Session管理
-  settings.ts        # AppSettings管理
-  __tests__/         # ユーティリティのテスト
+  storage.ts                        # Session管理（LocalStorage）
+  settings.ts                       # AppSettings管理（LocalStorage）
+  auth/
+    utils.ts                        # パスワードハッシュ化・検証（bcryptjs）
+    __tests__/utils.test.ts         # 認証ユーティリティテスト
+  db/
+    schema.ts                       # Drizzle ORM スキーマ（5テーブル）
+    index.ts                        # DB接続設定
+  __tests__/                        # ユーティリティテスト（2ファイル）
 
 types/
-  index.ts           # Session, AppSettings, DailyStats
+  index.ts                          # Session, AppSettings, DailyStats
+  next-auth.d.ts                    # NextAuth.js 型拡張
+
+drizzle/                            # マイグレーションファイル
+drizzle.config.ts                   # Drizzle Kit設定
 ```
 
 ---
@@ -450,8 +482,9 @@ const handleSave = () => {
 
 ## データ管理
 
-### storage.ts（`lib/storage.ts`）
+### LocalStorage（現時点の永続化）
 
+**storage.ts** (`lib/storage.ts`):
 ```typescript
 // セッション保存（配列の先頭に追加）
 saveSession: (session: Session): void => {
@@ -467,8 +500,7 @@ getStreak: (): number => {
 };
 ```
 
-### settings.ts（`lib/settings.ts`）
-
+**settings.ts** (`lib/settings.ts`):
 ```typescript
 // 設定取得（デフォルト値とマージ）
 get: (): AppSettings => {
@@ -476,6 +508,23 @@ get: (): AppSettings => {
   return data ? { ...DEFAULT_SETTINGS, ...JSON.parse(data) } : DEFAULT_SETTINGS;
 };
 ```
+
+### PostgreSQL（Drizzle ORM経由、移行中）
+
+**スキーマ** (`lib/db/schema.ts`):
+- `users` — ユーザー管理（id, email, passwordHash, authProvider, planType）
+- `sessions` — セッション記録（userId, type, duration, completedAt）
+- `userSettings` — ユーザー設定（meditationDuration, journalingDuration等）
+- `dailyStats` — 日次統計（ストリーク計算用）
+- `subscriptions` — サブスクリプション管理（将来用）
+
+**接続** (`lib/db/index.ts`):
+- Drizzle ORM + postgres
+- DATABASE_URL from `.env.local`
+
+### 移行計画
+- LocalStorage → PostgreSQL のデータ移行APIは未実装
+- API実装（`/api/sessions`, `/api/settings`）が移行の前提
 
 ---
 
@@ -598,11 +647,21 @@ claude mcp list
 
 ---
 
+## サブエージェント
+
+| エージェント | 専門領域 | 使用場面 |
+|------------|---------|--------|
+| `meditation-journaling-expert` | TDD、GitHub MCP、認証・DB実装 | Issue対応、テスト、コミット |
+| `premium-design-expert` | Apple風デザインシステム、Core Web Vitals最適化 | デザイン実装、UI/UX、パフォーマンス |
+
+---
+
 ## 制約・注意事項
 
 ### データ
 
-- LocalStorage（5MB制限）
+- LocalStorage（現時点の永続化、5MB制限）
+- PostgreSQL移行中（Supabase、スキーマ実装済み、APIは未実装）
 - 削除は物理削除（復元不可）
 - バックアップ機能なし
 
@@ -616,3 +675,10 @@ claude mcp list
 - Chrome, Firefox, Safari, Edge（最新版）
 - IE非対応
 - LocalStorage必須
+
+### セキュリティ
+
+- パスワード: bcryptjs（ハッシュ化）
+- 環境変数保護（.env.local、Gitignore済み）
+- 入力検証: Zod
+- 認証: NextAuth.js v5 (beta.30)、JWT セッション

@@ -94,10 +94,11 @@ npm run db:migrate
 # https://supabase.com/dashboard/project/xxxxx/editor
 ```
 
-### 4.2 初期データ投入（オプション）
+### 4.2 スキーマの強制プッシュ（開発環境用）
 
 ```bash
-npm run db:seed
+# マイグレーション不要で直接適用
+npm run db:push
 ```
 
 ---
@@ -179,6 +180,7 @@ npm start
   "test:coverage": "jest --coverage",
   "db:generate": "drizzle-kit generate",
   "db:migrate": "drizzle-kit migrate",
+  "db:push": "drizzle-kit push",
   "db:studio": "drizzle-kit studio"
 }
 ```

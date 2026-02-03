@@ -1,190 +1,163 @@
 # 実装進捗状況
 
-**最終更新**: 2026-02-03 18:30
-**現在のフェーズ**: Phase 1 - Week 1-2（環境構築・認証実装）
+**最終更新**: 2026-02-03
+**現在のブランチ**: `main`
+**現在のフェーズ**: Phase 1 - Week 1-2（環境構築・認証実装）→ Week 3-4へ移行中
 
 ---
 
 ## 完了したタスク
 
-### ✅ 環境構築（2026-02-03 午前）
+### ✅ 環境構築
 
-1. **依存関係のインストール**
-   - next-auth@beta (NextAuth.js v5)
-   - @supabase/supabase-js
-   - drizzle-orm, drizzle-kit, dotenv
-   - postgres, zod, bcryptjs
+- 依存関係インストール（NextAuth.js, Drizzle ORM, Supabase, bcryptjs, Zod等）
+- Supabaseプロジェクト作成（Tokyo リージョン、Free プラン）
+- 環境変数設定（`.env.local`）
+- プロジェクトドキュメント作成（PLAN.md, PROGRESS.md, SETUP.md, design.md）
 
-2. **Supabaseプロジェクト作成**
-   - Project名: meditation-journaling
-   - Project Ref: `gwtvnaucwaiynqhunyld`
-   - Region: Tokyo (ap-northeast-1)
-   - Plan: Free
+### ✅ データベース
 
-3. **環境変数設定**
-   - `.env.local` ファイル作成
-   - Supabase接続情報設定
-   - NextAuth.js設定
+- Drizzle ORM設定（`drizzle.config.ts`）
+- スキーマ定義（`lib/db/schema.ts`）— 5テーブル、5つのENUM型、外部キー制約、インデックス
+  - `users`, `sessions`, `userSettings`, `dailyStats`, `subscriptions`
+- データベースクライアント（`lib/db/index.ts`）
+- マイグレーション実行・Supabaseへの適用完了
+- package.jsonスクリプト追加（`db:generate`, `db:migrate`, `db:push`, `db:studio`）
 
-4. **プロジェクトドキュメント作成**
-   - `docs/PLAN.md` - 外部公開設計プラン
-   - `docs/PROGRESS.md` - 実装進捗状況
-   - `docs/SETUP.md` - セットアップ手順
+### ✅ 認証基盤（Issue #14）
 
-### ✅ データベーススキーマ定義（2026-02-03 午後）
+- NextAuth.js v5 設定（`auth.ts`）— Credentialsプロバイダー、JWT セッション
+- NextAuth APIルート（`app/api/auth/[...nextauth]/route.ts`）
+- 認証ユーティリティ（`lib/auth/utils.ts`）— bcryptjs パスワードハッシュ化・検証
+- 型拡張（`types/next-auth.d.ts`）
 
-1. **Drizzle ORM設定** (`drizzle.config.ts`)
-   - PostgreSQL接続設定
-   - dotenvによる環境変数読み込み
+### ✅ コアコンポーネント
 
-2. **スキーマ定義** (`lib/db/schema.ts`)
-   - `users` テーブル（ユーザー管理、認証情報）
-   - `sessions` テーブル（セッション記録）
-   - `user_settings` テーブル（ユーザー設定）
-   - `daily_stats` テーブル（日次統計、ストリーク計算用）
-   - `subscriptions` テーブル（将来のプレミアム機能用）
-   - 5つのENUM型定義
-   - 外部キー制約とインデックス
+- `MeditationTimer.tsx` — 瞑想タイマー（紫テーマ、開始/一時停止/停止）
+- `JournalingTimer.tsx` — メモ書きタイマー（青テーマ、10ページ、カウントダウン音）
+- `History.tsx` — 履歴・統計（ストリーク、セッション一覧、削除）
+- `Settings.tsx` — 設定モーダル（瞑想時間、メモ書き時間、休憩時間）
 
-3. **データベースクライアント** (`lib/db/index.ts`)
-   - Drizzle ORM + postgres接続
-   - スキーマのエクスポート
+### ✅ テスト（合計1,337行）
 
-4. **マイグレーション実行**
-   - マイグレーションファイル生成 (`drizzle/0000_magical_maverick.sql`)
-   - Supabaseへのスキーマ適用完了 ✅
+- `components/__tests__/MeditationTimer.test.tsx`
+- `components/__tests__/JournalingTimer.test.tsx`
+- `components/__tests__/History.test.tsx`
+- `components/__tests__/Settings.test.tsx`
+- `lib/__tests__/storage.test.ts`
+- `lib/__tests__/settings.test.ts`
+- `lib/auth/__tests__/utils.test.ts`
 
-5. **package.json スクリプト追加**
-   - `db:generate` - マイグレーションファイル生成
-   - `db:migrate` - マイグレーション実行
-   - `db:push` - スキーマのプッシュ
-   - `db:studio` - Drizzle Studio起動
+### ✅ サブエージェント
+
+- `meditation-journaling-expert` — TDD・GitHub MCP・認証・DB実装専門
+- `premium-design-expert` — Apple風デザインシステム・Core Web Vitals最適化専門
 
 ---
 
-## 現在実装中
+## 現在の Open Issues
 
-### 🔄 準備中（次のステップ確認中）
-
-**次の候補**:
-- NextAuth.js設定
-- 認証UI実装
-- または現在の変更をコミット
+| Issue | タイトル | 優先度 | 依存関係 |
+|-------|---------|--------|---------|
+| #15 | ユーザー登録機能の実装 | 高 | — |
+| #16 | ログイン/ログアウトUIの実装 | 高 | #15 |
+| #17 | 認証ミドルウェアの実装 | 高 | #15, #16 |
+| #19 | UIテキストの英語化 | 中 | — |
+| #20 | デザインシステム刷新（Apple風） | 高 | — |
 
 ---
 
 ## 次のタスク（優先順位順）
 
-### ⏳ Phase 1 - Week 1-2 残タスク
+### Phase 1 - Week 1-2 残タスク（認証機能）
 
-1. **現在の変更をコミット** ← 推奨
-   - ドキュメント作成（PLAN.md, PROGRESS.md, SETUP.md）
-   - データベーススキーマ定義
-   - Drizzle ORM設定
+1. **Issue #15: ユーザー登録機能** ← 次に着手
+   - `/api/auth/signup` APIエンドポイント
+   - Zodバリデーション（メール、パスワード強度）
+   - 重複チェック
+   - デフォルト設定の自動作成
 
-2. **NextAuth.js設定** ← 次のステップ
-   - `/lib/auth.ts` 作成
-   - Email認証プロバイダー設定
-   - Google認証プロバイダー設定（オプション）
-   - `/app/api/auth/[...nextauth]/route.ts` 作成
-   - ミドルウェア設定
+2. **Issue #16: ログイン/ログアウトUI**
+   - `/app/login/page.tsx`, `/app/signup/page.tsx`
+   - `AuthForm` 共通コンポーネント
+   - エラーメッセージ・ローディング状態
 
-3. **認証UI実装**
-   - `/app/(auth)/login/page.tsx` - ログイン画面
-   - `/app/(auth)/signup/page.tsx` - 新規登録画面
-   - Apple風デザイン適用
-   - フォームバリデーション
+3. **Issue #17: 認証ミドルウェア**
+   - `middleware.ts` 実装
+   - 保護ルート: `/`, `/api/*`
+   - 公開ルート: `/login`, `/signup`, `/api/auth/*`
 
-4. **認証機能のテスト**
-   - ユーザー登録フロー（TDD）
-   - ログインフロー（TDD）
-   - セッション管理
-   - パスワードリセット（将来）
+### Phase 1 - Week 3-4（データ移行・API）
 
-### ⏳ Phase 1 - Week 3-4
+4. **LocalStorage → DB移行**
+   - セッション管理API (`/api/sessions`)
+   - 設定管理API (`/api/settings`)
+   - 移行ロジック実装
 
-5. **LocalStorageからの移行**
-   - マイグレーションロジック実装
-   - 既存データの移行テスト
+### Phase 1 - Week 5-6（デザイン刷新）
 
-6. **API実装**
-   - セッションCRUD API
-   - 設定管理API
-   - 統計計算API
-
----
-
-## ブランチ情報
-
-- **現在のブランチ**: `feature/external-release-mvp`
-- **ベースブランチ**: `main`
-- **マージ先**: `develop` → `main`
-
----
-
-## 技術的メモ
-
-### Supabase接続情報
-- Project URL: `https://gwtvnaucwaiynqhunyld.supabase.co`
-- Region: ap-northeast-1 (Tokyo)
-- Database: PostgreSQL 15
-
-### 環境変数（`.env.local`）
-```bash
-NEXT_PUBLIC_SUPABASE_URL=xxx
-NEXT_PUBLIC_SUPABASE_ANON_KEY=xxx
-SUPABASE_SERVICE_ROLE_KEY=xxx
-DATABASE_URL=xxx
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=xxx
-```
-
-### 依存関係
-- Next.js: 15.1.6
-- React: 19.0.0
-- NextAuth.js: beta (v5)
-- Drizzle ORM: latest
-- Supabase: latest
-
----
-
-## 問題・課題
-
-### 解決済み
-- ✅ Supabase Connection string取得方法の明確化
-- ✅ 環境変数の設定完了
-- ✅ Drizzle Kit環境変数読み込み（dotenv使用）
-- ✅ データベーススキーマの適用
-
-### 未解決
-- なし
+5. **Issue #19: UIテキスト英語化**
+6. **Issue #20: デザインシステム刷新**
+   - デザイントークン定義
+   - グラスモーフィズム・マイクロインタラクション
+   - Core Web Vitals最適化
 
 ---
 
 ## 実装済みファイル一覧
 
-### データベース関連
-- ✅ `drizzle.config.ts` - Drizzle ORM設定
-- ✅ `lib/db/schema.ts` - データベーススキーマ（5テーブル）
-- ✅ `lib/db/index.ts` - データベースクライアント
-- ✅ `drizzle/0000_magical_maverick.sql` - マイグレーションSQL
+### アプリ
+- `app/page.tsx` — メインページ
+- `app/layout.tsx` — ルートレイアウト
+- `app/globals.css` — Tailwind CSS
+- `app/api/auth/[...nextauth]/route.ts` — NextAuth APIルート
+- `auth.ts` — NextAuth.js設定
 
-### ドキュメント
-- ✅ `docs/PLAN.md` - 外部公開設計プラン
-- ✅ `docs/PROGRESS.md` - 実装進捗状況（このファイル）
-- ✅ `docs/SETUP.md` - セットアップ手順
+### コンポーネント
+- `components/MeditationTimer.tsx`
+- `components/JournalingTimer.tsx`
+- `components/History.tsx`
+- `components/Settings.tsx`
 
-### 設定ファイル
-- ✅ `.env.local` - 環境変数（Gitignore済み）
-- ✅ `package.json` - 依存関係とスクリプト追加
+### ライブラリ
+- `lib/storage.ts` — LocalStorage Session管理
+- `lib/settings.ts` — LocalStorage 設定管理
+- `lib/auth/utils.ts` — パスワード検証
+- `lib/db/schema.ts` — Drizzle スキーマ
+- `lib/db/index.ts` — DB接続
+
+### 型定義
+- `types/index.ts` — Session, AppSettings, DailyStats
+- `types/next-auth.d.ts` — NextAuth型拡張
+
+### 設定・インフラ
+- `drizzle.config.ts` — Drizzle Kit設定
+- `drizzle/0000_magical_maverick.sql` — 初期マイグレーション
+- `.env.local` — 環境変数（Gitignore済み）
 
 ---
 
-## 変更ファイル統計
+## 技術メモ
 
-**追加ファイル**: 7ファイル
-**変更ファイル**: 2ファイル（package.json, drizzle.config.ts）
-**削除ファイル**: 0ファイル
+### Supabase
+- Project URL: `https://gwtvnaucwaiynqhunyld.supabase.co`
+- Region: ap-northeast-1 (Tokyo)
+- Database: PostgreSQL 15
+- Plan: Free
+
+### 環境変数（`.env.local`のキー）
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `DATABASE_URL`
+- `NEXTAUTH_URL`
+- `NEXTAUTH_SECRET`
+
+### バージョン
+- Next.js: ^15.1.6
+- React: ^19.0.0
+- NextAuth.js: v5 (beta.30)
+- Drizzle ORM: ^0.45.1
 
 ---
 
@@ -192,4 +165,5 @@ NEXTAUTH_SECRET=xxx
 
 - [設計プラン](./PLAN.md)
 - [セットアップ手順](./SETUP.md)
+- [設計仕様](./design.md)
 - [プロジェクトガイドライン](../CLAUDE.md)
