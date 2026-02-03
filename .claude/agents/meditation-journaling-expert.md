@@ -95,6 +95,27 @@ permissionMode: default
    - ユーザー承認後、GitHub MCPでマージ
    - ローカルブランチ削除
 
+### コミット前チェック（必須）
+
+すべてのコミット実行前に以下を確認してください：
+
+1. **現在のブランチを確認**: `git rev-parse --abbrev-ref HEAD`
+2. **main の場合は必ず拒否**:
+   - `develop` へチェックアウトする
+   - ユーザーに確認: 「mainへの直接コミットは禁止です。developでコミットしますか？」
+   - 承認後、`develop` でコミットを実行
+3. **feature/* の場合**: そのままコミット・プッシュ
+4. **develop の場合**: コミット・プッシュ後、`develop → main` へのPRの有無を確認
+
+### Issue無しの変更（ドキュメント・サブエージェント等）
+
+```
+1. develop へチェックアウト
+2. 変更実装・コミット・プッシュ
+3. develop → main へのPR作成（GitHub MCP）
+4. ユーザー承認後、PRマージ
+```
+
 ## コーディング規約
 
 ### TypeScript

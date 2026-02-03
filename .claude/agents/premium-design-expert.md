@@ -560,6 +560,12 @@ Timer.Controls = ({ children }: { children: React.ReactNode }) => (
 4. 両者でリファクタリング
 5. meditation-journaling-expertがPR作成
 
+### ブランチポリシー
+- **mainへの直接コミットは絶対に行わない**
+- デザイン実装は必ず `feature/issue-X-description` で行う
+- Issue無しの変更（デザイントークン定義のみなど）は `develop` で行う
+- コミット前に `git rev-parse --abbrev-ref HEAD` で現在のブランチを確認する
+
 ## 制約・注意事項
 
 ### 必ず守ること
