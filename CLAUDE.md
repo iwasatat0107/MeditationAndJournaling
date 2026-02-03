@@ -364,28 +364,38 @@ AIがコミットを実行する前に、必ず以下を確認する：
 
 ```
 app/
-  page.tsx                          # タブ切り替え、Settings表示
-  layout.tsx                        # メタデータ
+  page.tsx                          # タブ切り替え、認証チェック、ログアウト、Settings表示
+  layout.tsx                        # メタデータ、Providers래핑
+  providers.tsx                     # SessionProvider ラッパー（'use client'）
   globals.css                       # Tailwind
+  login/
+    page.tsx                        # ログインページ（AuthForm mode="login"）
+  signup/
+    page.tsx                        # 新規登録ページ（AuthForm mode="signup"）
   api/
     auth/
       [...nextauth]/route.ts        # NextAuth.js ルートハンドラ
+      signup/route.ts               # POST ユーザー登録API（バリデーション・重複チェック・ハッシュ・INSERT）
 
 auth.ts                             # NextAuth.js 設定（Credentialsプロバイダー）
 
 components/
+  AuthForm.tsx                      # 認証フォーム（login/signup モード切り替え）
   MeditationTimer.tsx               # 瞑想タイマー（紫）
   JournalingTimer.tsx               # メモ書きタイマー（青）
   History.tsx                       # 履歴・統計
   Settings.tsx                      # 設定モーダル
-  __tests__/                        # コンポーネントテスト（4ファイル）
+  __tests__/                        # コンポーネントテスト（5ファイル）
 
 lib/
   storage.ts                        # Session管理（LocalStorage）
   settings.ts                       # AppSettings管理（LocalStorage）
   auth/
+    validation.ts                   # Zod signupSchema（サーバー・クライアント共用）
     utils.ts                        # パスワードハッシュ化・検証（bcryptjs）
-    __tests__/utils.test.ts         # 認証ユーティリティテスト
+    __tests__/
+      validation.test.ts            # バリデーションテスト（7件）
+      utils.test.ts                 # 認証ユーティリティテスト
   db/
     schema.ts                       # Drizzle ORM スキーマ（5テーブル）
     index.ts                        # DB接続設定
@@ -691,6 +701,29 @@ claude mcp list
 |------------|---------|--------|
 | `meditation-journaling-expert` | TDD、GitHub MCP、認証・DB実装 | Issue対応、テスト、コミット |
 | `premium-design-expert` | Apple風デザインシステム、Core Web Vitals最適化 | デザイン実装、UI/UX、パフォーマンス |
+
+---
+
+## 予定機能（Planned）
+
+以下の機能は Issue として登録済みで、未実装です。
+
+### #17 — 認証ミドルウェア
+- 未認証ユーザーを `/login` へリダイレクト
+- ログイン済みユーザーの `/login`・`/signup` へのアクセス防止
+- `middleware.ts`（Next.js App Router対応）で実装予定
+
+### #19 — UIテキスト英語化
+- 日本語テキストを英語に切り替え
+
+### #20 — デザインシステム刷新
+- Apple風デザインシステムの導入
+
+### #26 — ログイン済みユーザー名の表示
+- **表示箇所**: `app/page.tsx` ヘッダー（ログアウトボタン左側）
+- **データソース**: `useSession()` から取得したセッション情報のメールアドレス
+- **表示形式**: 未定（メールアドレス全体 or `@` 以前のローカルパート部分のみ）
+- **前提**: #16 ログイン/ログアウトUI 完了済み
 
 ---
 
