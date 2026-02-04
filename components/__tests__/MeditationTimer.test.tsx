@@ -29,7 +29,8 @@ describe('MeditationTimer', () => {
   describe('初期表示', () => {
     it('開始前は設定画面の瞑想時間が表示される', () => {
       render(<MeditationTimer />);
-      expect(screen.getByText('5 min')).toBeInTheDocument();
+      expect(screen.getByText('5')).toBeInTheDocument();
+      expect(screen.getByText('min')).toBeInTheDocument();
     });
 
     it('「Start」ボタンが表示される', () => {
@@ -145,7 +146,8 @@ describe('MeditationTimer', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'Stop' }));
 
-      expect(screen.getByText('5 min')).toBeInTheDocument();
+      expect(screen.getByText('5')).toBeInTheDocument();
+      expect(screen.getByText('min')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Start' })).toBeInTheDocument();
     });
 
@@ -244,7 +246,8 @@ describe('MeditationTimer', () => {
         .mockReturnValueOnce({ meditationDuration: 10 });
 
       const { rerender } = render(<MeditationTimer />);
-      expect(screen.getByText('5 min')).toBeInTheDocument();
+      expect(screen.getByText('5')).toBeInTheDocument();
+      expect(screen.getByText('min')).toBeInTheDocument();
 
       // 設定変更をシミュレート
       rerender(<MeditationTimer />);

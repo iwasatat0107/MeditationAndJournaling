@@ -1,15 +1,19 @@
+import type { Language } from '@/types';
+
 const SETTINGS_KEY = 'meditation-journaling-settings';
 
 export interface AppSettings {
   meditationDuration: number; // 分
   journalingDuration: number; // 秒
   journalingBreakDuration: number; // 秒
+  language: Language;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
   meditationDuration: 5,
   journalingDuration: 60,
   journalingBreakDuration: 10,
+  language: 'en',
 };
 
 export const settings = {

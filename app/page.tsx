@@ -1,125 +1,230 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useSession, signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import MeditationTimer from '@/components/MeditationTimer';
-import JournalingTimer from '@/components/JournalingTimer';
-import History from '@/components/History';
-import Settings from '@/components/Settings';
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import MeditationTimer from "@/components/MeditationTimer";
+import JournalingTimer from "@/components/JournalingTimer";
+import History from "@/components/History";
+import Settings from "@/components/Settings";
+import { useLanguage } from "@/lib/i18n";
+import { cn } from "@/lib/cn";
+import { fadeInUp, appleTransition } from "@/lib/animations";
 
-type Tab = 'meditation' | 'journaling' | 'history';
+type Tab = "meditation" | "journaling" | "history";
+
+const tabs: { id: Tab; colorClass: string }[] = [
+  { id: "meditation", colorClass: "meditation" },
+  { id: "journaling", colorClass: "journaling" },
+  { id: "history", colorClass: "neutral" },
+];
 
 export default function Home() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<Tab>('meditation');
+  const { t } = useLanguage();
+  const [activeTab, setActiveTab] = useState<Tab>("meditation");
   const [refreshKey, setRefreshKey] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
+    if (status === "unauthenticated") {
+      router.push("/login");
     }
   }, [status, router]);
 
-  if (status === 'loading' || status === 'unauthenticated') {
+  useEffect(() => {
+    const activeIndex = tabs.findIndex((t) => t.id === activeTab);
+    const activeRef = tabRefs.current[activeIndex];
+    if (activeRef) {
+      setIndicatorStyle({
+        left: activeRef.offsetLeft,
+        width: activeRef.offsetWidth,
+      });
+    }
+  }, [activeTab]);
+
+  if (status === "loading" || status === "unauthenticated") {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center gap-4"
+        >
+          <div className="w-12 h-12 rounded-full border-4 border-meditation-200 border-t-meditation-600 animate-spin" />
+          <p className="text-muted-foreground">{t("page.loading")}</p>
+        </motion.div>
       </div>
     );
   }
 
   const handleComplete = () => {
-    setRefreshKey(prev => prev + 1);
+    setRefreshKey((prev) => prev + 1);
   };
 
   const handleLogout = async () => {
-    await signOut({ redirect: true, callbackUrl: '/login' });
+    await signOut({ redirect: true, callbackUrl: "/login" });
+  };
+
+  const getTabColor = () => {
+    switch (activeTab) {
+      case "meditation":
+        return "bg-meditation-600";
+      case "journaling":
+        return "bg-journaling-600";
+      default:
+        return "bg-neutral-600";
+    }
   };
 
   return (
-    <div className="min-h-screen p-8">
-      <div className="max-w-6xl mx-auto">
-        <header className="text-center mb-8 relative">
+    <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-950 dark:to-neutral-900">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <motion.header
+          variants={fadeInUp}
+          initial="initial"
+          animate="animate"
+          transition={appleTransition}
+          className="text-center mb-8 relative"
+        >
+          {/* User controls */}
           <div className="absolute right-0 top-0 flex items-center gap-2">
-            <span className="px-2 text-sm text-gray-600 dark:text-gray-400">
-              {session?.user?.email?.split('@')[0]}
+            <span className="text-caption text-muted-foreground hidden sm:inline">
+              {session?.user?.email?.split("@")[0]}
             </span>
-            <button
+            <motion.button
               onClick={() => setShowSettings(true)}
-              className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
-              title="Settings"
+              className={cn(
+                "p-2 rounded-apple-md",
+                "text-muted-foreground hover:text-foreground",
+                "hover:bg-neutral-100 dark:hover:bg-neutral-800",
+                "transition-colors duration-apple"
+              )}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              title={t("page.button.settings")}
             >
-              ⚙️ Settings
-            </button>
-            <button
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </motion.button>
+            <motion.button
               onClick={handleLogout}
-              className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
+              className={cn(
+                "px-3 py-2 rounded-apple-md text-small font-medium",
+                "text-muted-foreground hover:text-foreground",
+                "hover:bg-neutral-100 dark:hover:bg-neutral-800",
+                "transition-colors duration-apple"
+              )}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              Logout
-            </button>
+              {t("page.button.logout")}
+            </motion.button>
           </div>
-          <h1 className="text-4xl font-bold mb-2">Meditation + Journaling</h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Track your daily meditation and journaling to build habits
-          </p>
-        </header>
 
-        <div className="mb-8">
-          <div className="flex justify-center gap-4 border-b border-gray-300 dark:border-gray-700">
-            <button
-              onClick={() => setActiveTab('meditation')}
-              className={`px-6 py-3 font-medium transition-colors ${
-                activeTab === 'meditation'
-                  ? 'border-b-2 border-purple-600 text-purple-600'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-              }`}
-            >
-              Meditation
-            </button>
-            <button
-              onClick={() => setActiveTab('journaling')}
-              className={`px-6 py-3 font-medium transition-colors ${
-                activeTab === 'journaling'
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-              }`}
-            >
-              Journaling
-            </button>
-            <button
-              onClick={() => setActiveTab('history')}
-              className={`px-6 py-3 font-medium transition-colors ${
-                activeTab === 'history'
-                  ? 'border-b-2 border-gray-600 text-gray-600'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-              }`}
-            >
-              History
-            </button>
+          {/* Title */}
+          <h1 className="text-heading-1 text-foreground mb-2">{t("page.heading")}</h1>
+          <p className="text-body text-muted-foreground">{t("page.description")}</p>
+        </motion.header>
+
+        {/* Segment Control (iOS-style tabs) */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...appleTransition, delay: 0.1 }}
+          className="mb-10 flex justify-center"
+        >
+          <div className="relative inline-flex p-1 rounded-apple-lg bg-neutral-100/80 dark:bg-neutral-800/80 backdrop-blur-sm">
+            {/* Sliding indicator */}
+            <motion.div
+              className={cn("absolute top-1 bottom-1 rounded-apple-md shadow-elevation-1", getTabColor())}
+              initial={false}
+              animate={{
+                left: indicatorStyle.left,
+                width: indicatorStyle.width,
+              }}
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            />
+
+            {/* Tab buttons */}
+            {tabs.map((tab, index) => (
+              <button
+                key={tab.id}
+                ref={(el) => { tabRefs.current[index] = el; }}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  "relative z-10 px-6 py-2 rounded-apple-md text-sm font-medium",
+                  "transition-colors duration-apple",
+                  activeTab === tab.id ? "text-white" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {t(`page.tab.${tab.id}`)}
+              </button>
+            ))}
           </div>
-        </div>
+        </motion.div>
 
-        <main className="flex justify-center">
-          {activeTab === 'meditation' && (
-            <MeditationTimer onComplete={handleComplete} />
-          )}
-          {activeTab === 'journaling' && (
-            <JournalingTimer onComplete={handleComplete} />
-          )}
-          {activeTab === 'history' && (
-            <History key={refreshKey} />
-          )}
+        {/* Main content */}
+        <main className="flex justify-center min-h-[400px]">
+          <AnimatePresence mode="wait">
+            {activeTab === "meditation" && (
+              <motion.div
+                key="meditation"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={appleTransition}
+              >
+                <MeditationTimer onComplete={handleComplete} />
+              </motion.div>
+            )}
+            {activeTab === "journaling" && (
+              <motion.div
+                key="journaling"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={appleTransition}
+              >
+                <JournalingTimer onComplete={handleComplete} />
+              </motion.div>
+            )}
+            {activeTab === "history" && (
+              <motion.div
+                key="history"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={appleTransition}
+              >
+                <History key={refreshKey} />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </main>
 
-        <footer className="mt-16 text-center text-sm text-gray-500 dark:text-gray-400">
-          <p>Build your daily habits one step at a time</p>
-        </footer>
+        {/* Footer */}
+        <motion.footer
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="mt-16 text-center"
+        >
+          <p className="text-small text-muted-foreground">{t("page.footer")}</p>
+        </motion.footer>
       </div>
 
-      {showSettings && <Settings onClose={() => setShowSettings(false)} />}
+      {/* Settings Modal */}
+      <AnimatePresence>
+        {showSettings && <Settings onClose={() => setShowSettings(false)} />}
+      </AnimatePresence>
     </div>
   );
 }

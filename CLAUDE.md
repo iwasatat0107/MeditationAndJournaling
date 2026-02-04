@@ -693,6 +693,10 @@ claude mcp add github -- npx -y @modelcontextprotocol/server-github
 claude mcp list
 ```
 
+### GitHub MCP の注意事項
+
+- **`body` パラメータで `\n` を使わない**: `create_issue`, `update_issue`, `create_pull_request` の `body` に `\n` を書くと literal文字として崩れる。実際の改行で記述すること。
+
 ---
 
 ## サブエージェント
