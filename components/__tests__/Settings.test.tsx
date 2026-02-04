@@ -11,6 +11,7 @@ describe('Settings', () => {
     meditationDuration: 5,
     journalingDuration: 120,
     journalingBreakDuration: 10,
+    language: 'en',
   };
 
   beforeEach(() => {
@@ -153,6 +154,37 @@ describe('Settings', () => {
       fireEvent.click(closeButton);
 
       expect(mockOnClose).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('言語切り替え', () => {
+    it('言語選択UIが表示される', () => {
+      render(<Settings onClose={mockOnClose} />);
+      expect(screen.getByText('Language')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'English' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '日本語' })).toBeInTheDocument();
+    });
+
+    it('デフォルトは英語が選択状態で表示される', () => {
+      render(<Settings onClose={mockOnClose} />);
+      const englishBtn = screen.getByRole('button', { name: 'English' });
+      expect(englishBtn).toHaveClass('bg-purple-600', 'text-white');
+    });
+
+    it('「日本語」をクリックすると選択状態に変わる', () => {
+      render(<Settings onClose={mockOnClose} />);
+      const jaBtn = screen.getByRole('button', { name: '日本語' });
+      fireEvent.click(jaBtn);
+      expect(jaBtn).toHaveClass('bg-purple-600', 'text-white');
+    });
+
+    it('「日本語」を選んで保存すると language: "ja" が保存される', () => {
+      render(<Settings onClose={mockOnClose} />);
+      fireEvent.click(screen.getByRole('button', { name: '日本語' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+      expect(settings.save).toHaveBeenCalledWith(
+        expect.objectContaining({ language: 'ja' })
+      );
     });
   });
 });

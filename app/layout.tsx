@@ -3,8 +3,8 @@ import "./globals.css";
 import Providers from "./providers";
 
 export const metadata: Metadata = {
-  title: "瞑想+メモ書き",
-  description: "瞑想とメモ書きの記録アプリ",
+  title: "Meditation + Journaling",
+  description: "Track your daily meditation and journaling to build habits",
 };
 
 export default function RootLayout({
@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja">
+    <html lang="en">
       <body className="antialiased">
         <Providers>{children}</Providers>
       </body>

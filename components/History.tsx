@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import { storage } from '@/lib/storage';
 import { Session } from '@/types';
+import { useLanguage } from '@/lib/i18n';
 
 export default function History() {
+  const { language, t } = useLanguage();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [streak, setStreak] = useState(0);
 
@@ -18,7 +20,7 @@ export default function History() {
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm('Delete this record?')) {
+    if (window.confirm(t('history.confirm.delete'))) {
       storage.deleteSession(id);
       loadData();
     }
@@ -26,7 +28,7 @@ export default function History() {
 
   const formatDate = (isoString: string) => {
     const date = new Date(isoString);
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(language === 'ja' ? 'ja-JP' : 'en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -57,27 +59,27 @@ export default function History() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-6 rounded-lg">
           <div className="text-3xl font-bold">{streak}</div>
-          <div className="text-sm opacity-90">Streak</div>
+          <div className="text-sm opacity-90">{t('history.stat.streak')}</div>
         </div>
         <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-lg">
           <div className="text-3xl font-bold">{stats.totalMeditations}</div>
-          <div className="text-sm opacity-90">Meditation</div>
+          <div className="text-sm opacity-90">{t('history.stat.meditation')}</div>
         </div>
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-lg">
           <div className="text-3xl font-bold">{stats.totalJournalings}</div>
-          <div className="text-sm opacity-90">Journaling</div>
+          <div className="text-sm opacity-90">{t('history.stat.journaling')}</div>
         </div>
         <div className="bg-gradient-to-br from-gray-500 to-gray-600 text-white p-6 rounded-lg">
           <div className="text-3xl font-bold">{Math.floor(stats.totalDuration / 60)}</div>
-          <div className="text-sm opacity-90">Total (min)</div>
+          <div className="text-sm opacity-90">{t('history.stat.total')}</div>
         </div>
       </div>
 
       <div className="space-y-3">
-        <h3 className="text-xl font-bold">History</h3>
+        <h3 className="text-xl font-bold">{t('history.heading')}</h3>
         {sessions.length === 0 ? (
           <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-            No records yet
+            {t('history.empty')}
           </p>
         ) : (
           <div className="space-y-2">
@@ -95,7 +97,7 @@ export default function History() {
                           : 'bg-blue-200 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
                       }`}
                     >
-                      {session.type === 'meditation' ? 'Meditation' : 'Journaling'}
+                      {session.type === 'meditation' ? t('history.type.meditation') : t('history.type.journaling')}
                     </span>
                     <span className="text-sm text-gray-600 dark:text-gray-400">
                       {formatDuration(session.duration)}
@@ -114,7 +116,7 @@ export default function History() {
                   onClick={() => handleDelete(session.id)}
                   className="ml-4 text-red-500 hover:text-red-700 text-sm"
                 >
-                  Delete
+                  {t('history.button.delete')}
                 </button>
               </div>
             ))}

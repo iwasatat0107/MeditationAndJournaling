@@ -15,3 +15,5 @@ export interface DailyStats {
   journalingCount: number;
   totalDuration: number;
 }
+
+export type Language = 'en' | 'ja';
