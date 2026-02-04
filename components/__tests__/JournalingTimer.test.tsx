@@ -35,29 +35,29 @@ describe('JournalingTimer', () => {
   describe('初期表示', () => {
     it('開始前は設定画面のメモ書き時間が表示される', () => {
       render(<JournalingTimer />);
-      expect(screen.getByText(/1分/)).toBeInTheDocument();
+      expect(screen.getByText(/1 min/)).toBeInTheDocument();
     });
 
-    it('「10ページ」と表示される', () => {
+    it('「10 pages」と表示される', () => {
       render(<JournalingTimer />);
-      expect(screen.getByText(/10ページ/)).toBeInTheDocument();
+      expect(screen.getByText(/10 pages/)).toBeInTheDocument();
     });
 
     it('休憩時間が表示される', () => {
       render(<JournalingTimer />);
-      expect(screen.getByText(/休憩時間: 10秒/)).toBeInTheDocument();
+      expect(screen.getByText(/Break: 10s/)).toBeInTheDocument();
     });
 
-    it('「開始」ボタンが表示される', () => {
+    it('「Start」ボタンが表示される', () => {
       render(<JournalingTimer />);
-      expect(screen.getByRole('button', { name: '開始' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Start' })).toBeInTheDocument();
     });
   });
 
   describe('タイマー開始', () => {
-    it('「開始」ボタンをクリックするとタイマーが開始される', () => {
+    it('「Start」ボタンをクリックするとタイマーが開始される', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       expect(screen.getByText('1:00')).toBeInTheDocument();
     });
@@ -69,21 +69,21 @@ describe('JournalingTimer', () => {
       });
       render(<JournalingTimer />);
 
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       expect(screen.getByText('2:00')).toBeInTheDocument();
     });
 
-    it('「ページ 1 / 10」と表示される', () => {
+    it('「Page 1 / 10」と表示される', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
-      expect(screen.getByText('ページ 1 / 10')).toBeInTheDocument();
+      expect(screen.getByText('Page 1 / 10')).toBeInTheDocument();
     });
 
     it('カウントダウンが表示される', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       act(() => {
         jest.advanceTimersByTime(1000);
@@ -96,28 +96,28 @@ describe('JournalingTimer', () => {
   describe('ページ進行インジケーター', () => {
     it('書き込み中ページは青丸（点滅）で表示される', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       const indicators = screen.getAllByTestId('page-indicator');
       expect(indicators[0]).toHaveClass('bg-blue-400 animate-pulse');
     });
-  
+
     it('休憩中は現在のページが黄丸（点滅）で表示される', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
-  
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+
       act(() => {
         jest.advanceTimersByTime(60 * 1000);
       });
-  
+
       const indicators = screen.getAllByTestId('page-indicator');
       expect(indicators[0]).toHaveClass('bg-yellow-400 animate-pulse');
     });
-  
+
     it('完了ページは青丸で表示される', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
-  
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+
       // 1ページ目完了
       act(() => {
         jest.advanceTimersByTime(60 * 1000);
@@ -126,7 +126,7 @@ describe('JournalingTimer', () => {
       act(() => {
         jest.advanceTimersByTime(10 * 1000);
       });
-  
+
       const indicators = screen.getAllByTestId('page-indicator');
       // 1ページ目は完了
       expect(indicators[0]).toHaveClass('bg-blue-600');
@@ -136,15 +136,12 @@ describe('JournalingTimer', () => {
 
     it('未完了ページはグレー丸で表示される', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       const indicators = screen.getAllByTestId('page-indicator');
       expect(indicators[9]).toHaveClass('bg-gray-300');
     });
   });
-  
-  // Add data-testid to the indicator divs in JournalingTimer.tsx
-  // <div key={i} data-testid="page-indicator" className={...} />
 
   describe('カウントダウン音', () => {
     const mockPlay = jest.fn().mockResolvedValue(undefined);
@@ -157,7 +154,7 @@ describe('JournalingTimer', () => {
 
     it('残り5秒でビープ音が鳴る', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       act(() => {
         jest.advanceTimersByTime(55 * 1000);
@@ -168,7 +165,7 @@ describe('JournalingTimer', () => {
 
     it('残り4, 3, 2, 1秒でもビープ音が鳴る', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       act(() => {
         jest.advanceTimersByTime(55 * 1000); // to 5s
@@ -183,7 +180,7 @@ describe('JournalingTimer', () => {
 
     it('残り6秒以上では鳴らない', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       act(() => {
         jest.advanceTimersByTime(54 * 1000);
@@ -201,7 +198,7 @@ describe('JournalingTimer', () => {
       }));
 
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       act(() => {
         jest.advanceTimersByTime(60 * 1000);
@@ -212,18 +209,18 @@ describe('JournalingTimer', () => {
 
     it('休憩フェーズに切り替わる', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       act(() => {
         jest.advanceTimersByTime(60 * 1000);
       });
 
-      expect(screen.getByText('休憩中')).toBeInTheDocument();
+      expect(screen.getByText('Break')).toBeInTheDocument();
     });
 
     it('休憩時間のカウントダウンが始まる', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       act(() => {
         jest.advanceTimersByTime(60 * 1000);
@@ -241,7 +238,7 @@ describe('JournalingTimer', () => {
       }));
 
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       act(() => {
         jest.advanceTimersByTime(60 * 1000); // 書き込み完了
@@ -251,13 +248,13 @@ describe('JournalingTimer', () => {
       act(() => {
         jest.advanceTimersByTime(10 * 1000); // 休憩完了
       });
-      
+
       expect(mockPlay.mock.calls.length).toBeGreaterThan(callsAfterWrite);
     });
 
     it('次のページの書き込みフェーズに切り替わる', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       act(() => {
         jest.advanceTimersByTime(60 * 1000);
@@ -266,14 +263,14 @@ describe('JournalingTimer', () => {
         jest.advanceTimersByTime(10 * 1000);
       });
 
-      expect(screen.getByText('ページ 2 / 10')).toBeInTheDocument();
+      expect(screen.getByText('Page 2 / 10')).toBeInTheDocument();
     });
 
     it('ページ番号がインクリメントされる', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
-      expect(screen.getByText('ページ 1 / 10')).toBeInTheDocument();
+      expect(screen.getByText('Page 1 / 10')).toBeInTheDocument();
 
       act(() => {
         jest.advanceTimersByTime(60 * 1000); // 1ページ完了
@@ -282,29 +279,29 @@ describe('JournalingTimer', () => {
         jest.advanceTimersByTime(10 * 1000); // 休憩完了
       });
 
-      expect(screen.getByText('ページ 2 / 10')).toBeInTheDocument();
+      expect(screen.getByText('Page 2 / 10')).toBeInTheDocument();
     });
   });
 
   describe('最終ページ（10ページ目）', () => {
     it('10ページ目完了後は休憩なしで完了する', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       for (let i = 0; i < 9; i++) {
         act(() => { jest.advanceTimersByTime(60 * 1000); });
         act(() => { jest.advanceTimersByTime(10 * 1000); });
       }
-      
-      expect(screen.getByText('ページ 10 / 10')).toBeInTheDocument();
-      
+
+      expect(screen.getByText('Page 10 / 10')).toBeInTheDocument();
+
       act(() => {
         jest.advanceTimersByTime(60 * 1000);
       });
-      
-      expect(screen.getByRole('button', { name: '開始' })).toBeInTheDocument();
+
+      expect(screen.getByRole('button', { name: 'Start' })).toBeInTheDocument();
     });
-    
+
     it('完了音が鳴る', () => {
       const mockPlay = jest.fn().mockResolvedValue(undefined);
       (global.Audio as jest.Mock).mockImplementation(() => ({
@@ -312,7 +309,7 @@ describe('JournalingTimer', () => {
       }));
 
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       for (let i = 0; i < 10; i++) {
         act(() => { jest.advanceTimersByTime(60 * 1000); });
@@ -336,14 +333,14 @@ describe('JournalingTimer', () => {
 
     it('Sessionが保存される', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
       completeTheTimer();
       expect(storage.saveSession).toHaveBeenCalled();
     });
 
     it('Session.type が "journaling" である', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
       completeTheTimer();
       expect(storage.saveSession).toHaveBeenCalledWith(
         expect.objectContaining({ type: 'journaling' })
@@ -352,7 +349,7 @@ describe('JournalingTimer', () => {
 
     it('Session.duration が実際の経過時間（秒）である', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
       completeTheTimer();
       expect(storage.saveSession).toHaveBeenCalledWith(
         expect.objectContaining({ duration: expect.any(Number) })
@@ -362,57 +359,57 @@ describe('JournalingTimer', () => {
     it('onComplete コールバックが呼ばれる', () => {
       const onComplete = jest.fn();
       render(<JournalingTimer onComplete={onComplete} />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
       completeTheTimer();
       expect(onComplete).toHaveBeenCalled();
     });
 
     it('初期状態にリセットされる', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
       completeTheTimer();
-      expect(screen.getByRole('button', { name: '開始' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Start' })).toBeInTheDocument();
     });
   });
 
   describe('途中終了', () => {
-    it('「終了」ボタンをクリックすると確認ダイアログが表示される', () => {
+    it('「End」ボタンをクリックすると確認ダイアログが表示される', () => {
       confirmSpy.mockReturnValue(false); // Simulate user clicking "Cancel"
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
-      fireEvent.click(screen.getByRole('button', { name: '終了' }));
-      expect(confirmSpy).toHaveBeenCalledWith('メモ書きを終了しますか？');
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+      fireEvent.click(screen.getByRole('button', { name: 'End' }));
+      expect(confirmSpy).toHaveBeenCalledWith('End journaling?');
     });
 
     it('確認ダイアログでOKすると、Sessionが保存される', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       act(() => {
         jest.advanceTimersByTime(30 * 1000);
       });
 
-      fireEvent.click(screen.getByRole('button', { name: '終了' }));
+      fireEvent.click(screen.getByRole('button', { name: 'End' }));
 
       expect(storage.saveSession).toHaveBeenCalled();
     });
 
     it('確認ダイアログでOKすると、初期状態にリセットされる', () => {
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
-      fireEvent.click(screen.getByRole('button', { name: '終了' }));
-      expect(screen.getByRole('button', { name: '開始' })).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+      fireEvent.click(screen.getByRole('button', { name: 'End' }));
+      expect(screen.getByRole('button', { name: 'Start' })).toBeInTheDocument();
     });
 
     it('確認ダイアログでキャンセルすると、タイマーは続行する', () => {
       confirmSpy.mockReturnValue(false); // Simulate user clicking "Cancel"
       render(<JournalingTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
       act(() => { jest.advanceTimersByTime(1000); });
       expect(screen.getByText("0:59")).toBeInTheDocument();
-      
-      fireEvent.click(screen.getByRole('button', { name: '終了' }));
-      
+
+      fireEvent.click(screen.getByRole('button', { name: 'End' }));
+
       expect(screen.getByText("0:59")).toBeInTheDocument(); // still running
       expect(storage.saveSession).not.toHaveBeenCalled();
     });

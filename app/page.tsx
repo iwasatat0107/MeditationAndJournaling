@@ -26,7 +26,7 @@ export default function Home() {
   if (status === 'loading' || status === 'unauthenticated') {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600 dark:text-gray-400">読み込み中...</p>
+        <p className="text-gray-600 dark:text-gray-400">Loading...</p>
       </div>
     );
   }
@@ -50,20 +50,20 @@ export default function Home() {
             <button
               onClick={() => setShowSettings(true)}
               className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
-              title="設定"
+              title="Settings"
             >
-              ⚙️ 設定
+              ⚙️ Settings
             </button>
             <button
               onClick={handleLogout}
               className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
             >
-              ログアウト
+              Logout
             </button>
           </div>
-          <h1 className="text-4xl font-bold mb-2">瞑想+メモ書き</h1>
+          <h1 className="text-4xl font-bold mb-2">Meditation + Journaling</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            日々の瞑想とメモ書きを記録して、習慣化をサポートします
+            Track your daily meditation and journaling to build habits
           </p>
         </header>
 
@@ -77,7 +77,7 @@ export default function Home() {
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >
-              瞑想
+              Meditation
             </button>
             <button
               onClick={() => setActiveTab('journaling')}
@@ -87,7 +87,7 @@ export default function Home() {
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >
-              メモ書き
+              Journaling
             </button>
             <button
               onClick={() => setActiveTab('history')}
@@ -97,7 +97,7 @@ export default function Home() {
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >
-              履歴
+              History
             </button>
           </div>
         </div>
@@ -115,7 +115,7 @@ export default function Home() {
         </main>
 
         <footer className="mt-16 text-center text-sm text-gray-500 dark:text-gray-400">
-          <p>毎日の習慣を記録して、自己効力感を高めましょう</p>
+          <p>Build your daily habits one step at a time</p>
         </footer>
       </div>
 

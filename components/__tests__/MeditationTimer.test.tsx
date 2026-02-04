@@ -29,12 +29,12 @@ describe('MeditationTimer', () => {
   describe('初期表示', () => {
     it('開始前は設定画面の瞑想時間が表示される', () => {
       render(<MeditationTimer />);
-      expect(screen.getByText('5分')).toBeInTheDocument();
+      expect(screen.getByText('5 min')).toBeInTheDocument();
     });
 
-    it('「開始」ボタンが表示される', () => {
+    it('「Start」ボタンが表示される', () => {
       render(<MeditationTimer />);
-      expect(screen.getByRole('button', { name: '開始' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Start' })).toBeInTheDocument();
     });
 
     it('タイマーは表示されない', () => {
@@ -44,9 +44,9 @@ describe('MeditationTimer', () => {
   });
 
   describe('タイマー開始', () => {
-    it('「開始」ボタンをクリックするとタイマーが開始される', () => {
+    it('「Start」ボタンをクリックするとタイマーが開始される', () => {
       render(<MeditationTimer />);
-      const startButton = screen.getByRole('button', { name: '開始' });
+      const startButton = screen.getByRole('button', { name: 'Start' });
 
       fireEvent.click(startButton);
 
@@ -57,14 +57,14 @@ describe('MeditationTimer', () => {
       (settings.get as jest.Mock).mockReturnValue({ meditationDuration: 10 });
       render(<MeditationTimer />);
 
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       expect(screen.getByText('10:00')).toBeInTheDocument();
     });
 
     it('カウントダウンが表示される', () => {
       render(<MeditationTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       act(() => {
         jest.advanceTimersByTime(1000);
@@ -73,32 +73,32 @@ describe('MeditationTimer', () => {
       expect(screen.getByText('4:59')).toBeInTheDocument();
     });
 
-    it('「一時停止」ボタンが表示される', () => {
+    it('「Pause」ボタンが表示される', () => {
       render(<MeditationTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
-      expect(screen.getByRole('button', { name: '一時停止' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Pause' })).toBeInTheDocument();
     });
 
-    it('「停止」ボタンが表示される', () => {
+    it('「Stop」ボタンが表示される', () => {
       render(<MeditationTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
-      expect(screen.getByRole('button', { name: '停止' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Stop' })).toBeInTheDocument();
     });
   });
 
   describe('一時停止・再開', () => {
-    it('「一時停止」ボタンをクリックするとタイマーが停止する', () => {
+    it('「Pause」ボタンをクリックするとタイマーが停止する', () => {
       render(<MeditationTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       act(() => {
         jest.advanceTimersByTime(1000);
       });
       expect(screen.getByText('4:59')).toBeInTheDocument();
 
-      fireEvent.click(screen.getByRole('button', { name: '一時停止' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Pause' }));
 
       act(() => {
         jest.advanceTimersByTime(1000);
@@ -107,25 +107,25 @@ describe('MeditationTimer', () => {
       expect(screen.getByText('4:59')).toBeInTheDocument();
     });
 
-    it('「再開」ボタンが表示される', () => {
+    it('「Resume」ボタンが表示される', () => {
       render(<MeditationTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
-      fireEvent.click(screen.getByRole('button', { name: '一時停止' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Pause' }));
 
-      expect(screen.getByRole('button', { name: '再開' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Resume' })).toBeInTheDocument();
     });
 
-    it('「再開」ボタンをクリックするとタイマーが再開される', () => {
+    it('「Resume」ボタンをクリックするとタイマーが再開される', () => {
       render(<MeditationTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       act(() => {
         jest.advanceTimersByTime(1000);
       });
       expect(screen.getByText('4:59')).toBeInTheDocument();
 
-      fireEvent.click(screen.getByRole('button', { name: '一時停止' }));
-      fireEvent.click(screen.getByRole('button', { name: '再開' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Pause' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Resume' }));
 
       act(() => {
         jest.advanceTimersByTime(1000);
@@ -135,32 +135,32 @@ describe('MeditationTimer', () => {
   });
 
   describe('停止', () => {
-    it('「停止」ボタンをクリックするとタイマーがリセットされる', () => {
+    it('「Stop」ボタンをクリックするとタイマーがリセットされる', () => {
       render(<MeditationTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       act(() => {
         jest.advanceTimersByTime(2000);
       });
 
-      fireEvent.click(screen.getByRole('button', { name: '停止' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Stop' }));
 
-      expect(screen.getByText('5分')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: '開始' })).toBeInTheDocument();
+      expect(screen.getByText('5 min')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Start' })).toBeInTheDocument();
     });
 
     it('Sessionが保存されない', () => {
       render(<MeditationTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
-      fireEvent.click(screen.getByRole('button', { name: '停止' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Stop' }));
 
       expect(storage.saveSession).not.toHaveBeenCalled();
     });
 
     it('初期画面に戻る', () => {
       render(<MeditationTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
-      fireEvent.click(screen.getByRole('button', { name: '停止' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Stop' }));
 
       expect(screen.queryByText(/:/)).not.toBeInTheDocument();
     });
@@ -174,7 +174,7 @@ describe('MeditationTimer', () => {
       }));
 
       render(<MeditationTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       act(() => {
         jest.advanceTimersByTime(5 * 60 * 1000);
@@ -185,7 +185,7 @@ describe('MeditationTimer', () => {
 
     it('Sessionが保存される', () => {
       render(<MeditationTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       act(() => {
         jest.advanceTimersByTime(5 * 60 * 1000);
@@ -196,7 +196,7 @@ describe('MeditationTimer', () => {
 
     it('Session.type が "meditation" である', () => {
       render(<MeditationTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       act(() => {
         jest.advanceTimersByTime(5 * 60 * 1000);
@@ -211,7 +211,7 @@ describe('MeditationTimer', () => {
 
     it('Session.duration が設定時間（秒）である', () => {
       render(<MeditationTimer />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       act(() => {
         jest.advanceTimersByTime(5 * 60 * 1000);
@@ -227,7 +227,7 @@ describe('MeditationTimer', () => {
     it('onComplete コールバックが呼ばれる', () => {
       const onComplete = jest.fn();
       render(<MeditationTimer onComplete={onComplete} />);
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       act(() => {
         jest.advanceTimersByTime(5 * 60 * 1000);
@@ -244,12 +244,12 @@ describe('MeditationTimer', () => {
         .mockReturnValueOnce({ meditationDuration: 10 });
 
       const { rerender } = render(<MeditationTimer />);
-      expect(screen.getByText('5分')).toBeInTheDocument();
+      expect(screen.getByText('5 min')).toBeInTheDocument();
 
       // 設定変更をシミュレート
       rerender(<MeditationTimer />);
 
-      fireEvent.click(screen.getByRole('button', { name: '開始' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
       expect(screen.getByText('10:00')).toBeInTheDocument();
     });
   });

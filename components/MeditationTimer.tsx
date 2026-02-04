@@ -90,15 +90,15 @@ export default function MeditationTimer({ onComplete }: { onComplete?: () => voi
       {!isRunning ? (
         <>
           <div className="text-center space-y-4">
-            <h2 className="text-3xl font-bold text-purple-600 dark:text-purple-400">瞑想</h2>
-            <p className="text-5xl font-bold text-purple-700 dark:text-purple-300">{duration}分</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">時間は設定から変更できます</p>
+            <h2 className="text-3xl font-bold text-purple-600 dark:text-purple-400">Meditation</h2>
+            <p className="text-5xl font-bold text-purple-700 dark:text-purple-300">{duration} min</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Change duration in Settings</p>
           </div>
           <button
             onClick={handleStart}
             className="px-12 py-5 bg-purple-600 text-white rounded-lg font-bold text-xl hover:bg-purple-700 transition-colors shadow-lg"
           >
-            開始
+            Start
           </button>
         </>
       ) : (
@@ -111,13 +111,13 @@ export default function MeditationTimer({ onComplete }: { onComplete?: () => voi
               onClick={handlePause}
               className="px-6 py-3 bg-yellow-600 text-white rounded-lg font-medium hover:bg-yellow-700 transition-colors"
             >
-              {isPaused ? '再開' : '一時停止'}
+              {isPaused ? 'Resume' : 'Pause'}
             </button>
             <button
               onClick={handleStop}
               className="px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
             >
-              停止
+              Stop
             </button>
           </div>
         </>
