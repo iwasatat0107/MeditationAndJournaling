@@ -125,7 +125,7 @@ export default function JournalingTimer({ onComplete }: { onComplete?: () => voi
   };
 
   const handleStop = () => {
-    if (window.confirm('メモ書きを終了しますか？')) {
+    if (window.confirm('End journaling?')) {
       handleComplete();
     }
   };
@@ -141,35 +141,35 @@ export default function JournalingTimer({ onComplete }: { onComplete?: () => voi
       {!isRunning ? (
         <>
           <div className="text-center space-y-4">
-            <h2 className="text-3xl font-bold text-blue-600 dark:text-blue-400">メモ書き</h2>
+            <h2 className="text-3xl font-bold text-blue-600 dark:text-blue-400">Journaling</h2>
             <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
-              {duration < 60 ? `${duration}秒` : `${duration / 60}分`} × {MAX_PAGES}ページ
+              {duration < 60 ? `${duration}s` : `${duration / 60} min`} × {MAX_PAGES} pages
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              休憩時間: {breakDuration}秒
+              Break: {breakDuration}s
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              設定から時間を変更できます
+              Change duration in Settings
             </p>
           </div>
           <button
             onClick={handleStart}
             className="px-12 py-5 bg-blue-600 text-white rounded-lg font-bold text-xl hover:bg-blue-700 transition-colors shadow-lg"
           >
-            開始
+            Start
           </button>
         </>
       ) : (
         <>
           <div className="text-center space-y-4">
             <div className="text-lg font-medium text-blue-600 dark:text-blue-400">
-              {phase === 'writing' ? `ページ ${currentPage} / ${MAX_PAGES}` : '休憩中'}
+              {phase === 'writing' ? `Page ${currentPage} / ${MAX_PAGES}` : 'Break'}
             </div>
             <div className="text-8xl font-bold tabular-nums text-blue-600 dark:text-blue-400">
               {formatTime(timeLeft)}
             </div>
             <div className="text-base text-gray-600 dark:text-gray-400">
-              {phase === 'writing' ? '紙に書き出しましょう' : '次のページまで休憩'}
+              {phase === 'writing' ? 'Write it out' : 'Rest until next page'}
             </div>
           </div>
 
@@ -195,7 +195,7 @@ export default function JournalingTimer({ onComplete }: { onComplete?: () => voi
             onClick={handleStop}
             className="px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
           >
-            終了
+            End
           </button>
         </>
       )}

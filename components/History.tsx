@@ -18,7 +18,7 @@ export default function History() {
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm('この記録を削除しますか?')) {
+    if (window.confirm('Delete this record?')) {
       storage.deleteSession(id);
       loadData();
     }
@@ -26,7 +26,7 @@ export default function History() {
 
   const formatDate = (isoString: string) => {
     const date = new Date(isoString);
-    return new Intl.DateTimeFormat('ja-JP', {
+    return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -38,9 +38,9 @@ export default function History() {
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    if (mins === 0) return `${secs}秒`;
-    if (secs === 0) return `${mins}分`;
-    return `${mins}分${secs}秒`;
+    if (mins === 0) return `${secs}s`;
+    if (secs === 0) return `${mins}m`;
+    return `${mins}m${secs}s`;
   };
 
   const getTotalStats = () => {
@@ -57,27 +57,27 @@ export default function History() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-6 rounded-lg">
           <div className="text-3xl font-bold">{streak}</div>
-          <div className="text-sm opacity-90">連続記録日数</div>
+          <div className="text-sm opacity-90">Streak</div>
         </div>
         <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-lg">
           <div className="text-3xl font-bold">{stats.totalMeditations}</div>
-          <div className="text-sm opacity-90">瞑想回数</div>
+          <div className="text-sm opacity-90">Meditation</div>
         </div>
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-lg">
           <div className="text-3xl font-bold">{stats.totalJournalings}</div>
-          <div className="text-sm opacity-90">メモ書き回数</div>
+          <div className="text-sm opacity-90">Journaling</div>
         </div>
         <div className="bg-gradient-to-br from-gray-500 to-gray-600 text-white p-6 rounded-lg">
           <div className="text-3xl font-bold">{Math.floor(stats.totalDuration / 60)}</div>
-          <div className="text-sm opacity-90">合計時間（分）</div>
+          <div className="text-sm opacity-90">Total (min)</div>
         </div>
       </div>
 
       <div className="space-y-3">
-        <h3 className="text-xl font-bold">履歴</h3>
+        <h3 className="text-xl font-bold">History</h3>
         {sessions.length === 0 ? (
           <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-            まだ記録がありません
+            No records yet
           </p>
         ) : (
           <div className="space-y-2">
@@ -95,7 +95,7 @@ export default function History() {
                           : 'bg-blue-200 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
                       }`}
                     >
-                      {session.type === 'meditation' ? '瞑想' : 'メモ書き'}
+                      {session.type === 'meditation' ? 'Meditation' : 'Journaling'}
                     </span>
                     <span className="text-sm text-gray-600 dark:text-gray-400">
                       {formatDuration(session.duration)}
@@ -114,7 +114,7 @@ export default function History() {
                   onClick={() => handleDelete(session.id)}
                   className="ml-4 text-red-500 hover:text-red-700 text-sm"
                 >
-                  削除
+                  Delete
                 </button>
               </div>
             ))}
