@@ -70,7 +70,7 @@ describe('History', () => {
     it('瞑想回数が正しく集計される', () => {
       render(<History />);
       const meditationCard = screen.getAllByText('Meditation').find(
-        el => el.parentElement?.className.includes('from-purple-500')
+        el => el.parentElement?.className.includes('from-meditation-500')
       )?.parentElement;
       expect(meditationCard).toHaveTextContent('2');
     });
@@ -78,7 +78,7 @@ describe('History', () => {
     it('メモ書き回数が正しく集計される', () => {
       render(<History />);
       const journalingCard = screen.getAllByText('Journaling').find(
-        el => el.parentElement?.className.includes('from-blue-500')
+        el => el.parentElement?.className.includes('from-journaling-500')
       )?.parentElement;
       expect(journalingCard).toHaveTextContent('1');
     });
@@ -100,14 +100,14 @@ describe('History', () => {
       render(<History />);
       const meditationBadges = screen.getAllByText('Meditation').filter(el => el.tagName === 'SPAN');
       meditationBadges.forEach((badge) => {
-        expect(badge).toHaveClass('bg-purple-200', 'text-purple-800');
+        expect(badge).toHaveClass('bg-meditation-100', 'text-meditation-700');
       });
     });
 
     it('メモ書きセッションは青のバッジで表示される', () => {
       render(<History />);
       const journalingBadge = screen.getAllByText('Journaling').find(el => el.tagName === 'SPAN')!;
-      expect(journalingBadge).toHaveClass('bg-blue-200', 'text-blue-800');
+      expect(journalingBadge).toHaveClass('bg-journaling-100', 'text-journaling-700');
     });
   });
 
