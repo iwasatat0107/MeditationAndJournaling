@@ -3,8 +3,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { storage } from '@/lib/storage';
 import { settings } from '@/lib/settings';
+import { useLanguage } from '@/lib/i18n';
 
 export default function MeditationTimer({ onComplete }: { onComplete?: () => void }) {
+  const { t } = useLanguage();
   const [duration, setDuration] = useState(5);
   const [timeLeft, setTimeLeft] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
@@ -90,15 +92,15 @@ export default function MeditationTimer({ onComplete }: { onComplete?: () => voi
       {!isRunning ? (
         <>
           <div className="text-center space-y-4">
-            <h2 className="text-3xl font-bold text-purple-600 dark:text-purple-400">Meditation</h2>
+            <h2 className="text-3xl font-bold text-purple-600 dark:text-purple-400">{t('meditation.heading')}</h2>
             <p className="text-5xl font-bold text-purple-700 dark:text-purple-300">{duration} min</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Change duration in Settings</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{t('meditation.hint')}</p>
           </div>
           <button
             onClick={handleStart}
             className="px-12 py-5 bg-purple-600 text-white rounded-lg font-bold text-xl hover:bg-purple-700 transition-colors shadow-lg"
           >
-            Start
+            {t('meditation.button.start')}
           </button>
         </>
       ) : (
@@ -111,13 +113,13 @@ export default function MeditationTimer({ onComplete }: { onComplete?: () => voi
               onClick={handlePause}
               className="px-6 py-3 bg-yellow-600 text-white rounded-lg font-medium hover:bg-yellow-700 transition-colors"
             >
-              {isPaused ? 'Resume' : 'Pause'}
+              {isPaused ? t('meditation.button.resume') : t('meditation.button.pause')}
             </button>
             <button
               onClick={handleStop}
               className="px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
             >
-              Stop
+              {t('meditation.button.stop')}
             </button>
           </div>
         </>

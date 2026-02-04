@@ -7,12 +7,14 @@ import MeditationTimer from '@/components/MeditationTimer';
 import JournalingTimer from '@/components/JournalingTimer';
 import History from '@/components/History';
 import Settings from '@/components/Settings';
+import { useLanguage } from '@/lib/i18n';
 
 type Tab = 'meditation' | 'journaling' | 'history';
 
 export default function Home() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<Tab>('meditation');
   const [refreshKey, setRefreshKey] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
@@ -26,7 +28,7 @@ export default function Home() {
   if (status === 'loading' || status === 'unauthenticated') {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+        <p className="text-gray-600 dark:text-gray-400">{t('page.loading')}</p>
       </div>
     );
   }
@@ -52,18 +54,18 @@ export default function Home() {
               className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
               title="Settings"
             >
-              ⚙️ Settings
+              ⚙️ {t('page.button.settings')}
             </button>
             <button
               onClick={handleLogout}
               className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
             >
-              Logout
+              {t('page.button.logout')}
             </button>
           </div>
-          <h1 className="text-4xl font-bold mb-2">Meditation + Journaling</h1>
+          <h1 className="text-4xl font-bold mb-2">{t('page.heading')}</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Track your daily meditation and journaling to build habits
+            {t('page.description')}
           </p>
         </header>
 
@@ -77,7 +79,7 @@ export default function Home() {
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >
-              Meditation
+              {t('page.tab.meditation')}
             </button>
             <button
               onClick={() => setActiveTab('journaling')}
@@ -87,7 +89,7 @@ export default function Home() {
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >
-              Journaling
+              {t('page.tab.journaling')}
             </button>
             <button
               onClick={() => setActiveTab('history')}
@@ -97,7 +99,7 @@ export default function Home() {
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >
-              History
+              {t('page.tab.history')}
             </button>
           </div>
         </div>
@@ -115,7 +117,7 @@ export default function Home() {
         </main>
 
         <footer className="mt-16 text-center text-sm text-gray-500 dark:text-gray-400">
-          <p>Build your daily habits one step at a time</p>
+          <p>{t('page.footer')}</p>
         </footer>
       </div>
 

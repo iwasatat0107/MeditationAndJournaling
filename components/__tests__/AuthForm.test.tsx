@@ -23,23 +23,23 @@ describe('AuthForm', () => {
   });
 
   describe('ログインモード', () => {
-    it('「ログイン」見出しが表示される', () => {
+    it('「Login」見出しが表示される', () => {
       render(<AuthForm mode="login" />);
 
-      expect(screen.getByRole('heading', { name: 'ログイン' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Login' })).toBeInTheDocument();
     });
 
     it('サインアップページへのリンクが表示される', () => {
       render(<AuthForm mode="login" />);
 
-      expect(screen.getByRole('link', { name: '登録へ' })).toHaveAttribute('href', '/signup');
+      expect(screen.getByRole('link', { name: 'Sign up' })).toHaveAttribute('href', '/signup');
     });
 
     it('メール・パスワード入力フィールドが表示される', () => {
       render(<AuthForm mode="login" />);
 
-      expect(screen.getByLabelText('メールアドレス')).toBeInTheDocument();
-      expect(screen.getByLabelText('パスワード')).toBeInTheDocument();
+      expect(screen.getByLabelText('Email')).toBeInTheDocument();
+      expect(screen.getByLabelText('Password')).toBeInTheDocument();
     });
 
     it('有効なデータで送信すると signIn が呼ばれる', async () => {
@@ -47,15 +47,15 @@ describe('AuthForm', () => {
 
       render(<AuthForm mode="login" />);
 
-      fireEvent.change(screen.getByLabelText('メールアドレス'), {
+      fireEvent.change(screen.getByLabelText('Email'), {
         target: { value: 'test@example.com' },
       });
-      fireEvent.change(screen.getByLabelText('パスワード'), {
+      fireEvent.change(screen.getByLabelText('Password'), {
         target: { value: 'password123' },
       });
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'ログイン' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Login' }));
       });
 
       expect(signIn).toHaveBeenCalledWith('credentials', {
@@ -70,18 +70,18 @@ describe('AuthForm', () => {
 
       render(<AuthForm mode="login" />);
 
-      fireEvent.change(screen.getByLabelText('メールアドレス'), {
+      fireEvent.change(screen.getByLabelText('Email'), {
         target: { value: 'test@example.com' },
       });
-      fireEvent.change(screen.getByLabelText('パスワード'), {
+      fireEvent.change(screen.getByLabelText('Password'), {
         target: { value: 'password123' },
       });
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'ログイン' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Login' }));
       });
 
-      expect(screen.getByText('メールまたはパスワードが不正です')).toBeInTheDocument();
+      expect(screen.getByText('Invalid email or password')).toBeInTheDocument();
     });
 
     it('ログイン成功時に / へリダイレクトされる', async () => {
@@ -89,15 +89,15 @@ describe('AuthForm', () => {
 
       render(<AuthForm mode="login" />);
 
-      fireEvent.change(screen.getByLabelText('メールアドレス'), {
+      fireEvent.change(screen.getByLabelText('Email'), {
         target: { value: 'test@example.com' },
       });
-      fireEvent.change(screen.getByLabelText('パスワード'), {
+      fireEvent.change(screen.getByLabelText('Password'), {
         target: { value: 'password123' },
       });
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'ログイン' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Login' }));
       });
 
       expect(mockPush).toHaveBeenCalledWith('/');
@@ -112,16 +112,16 @@ describe('AuthForm', () => {
       global.fetch = mockFetch as unknown as typeof fetch;
     });
 
-    it('「新規登録」見出しが表示される', () => {
+    it('「Sign Up」見出しが表示される', () => {
       render(<AuthForm mode="signup" />);
 
-      expect(screen.getByRole('heading', { name: '新規登録' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Sign Up' })).toBeInTheDocument();
     });
 
     it('ログインページへのリンクが表示される', () => {
       render(<AuthForm mode="signup" />);
 
-      expect(screen.getByRole('link', { name: 'ログインへ' })).toHaveAttribute('href', '/login');
+      expect(screen.getByRole('link', { name: 'Log in' })).toHaveAttribute('href', '/login');
     });
 
     it('有効なデータで送信すると /api/auth/signup に POST される', async () => {
@@ -133,15 +133,15 @@ describe('AuthForm', () => {
 
       render(<AuthForm mode="signup" />);
 
-      fireEvent.change(screen.getByLabelText('メールアドレス'), {
+      fireEvent.change(screen.getByLabelText('Email'), {
         target: { value: 'new@example.com' },
       });
-      fireEvent.change(screen.getByLabelText('パスワード'), {
+      fireEvent.change(screen.getByLabelText('Password'), {
         target: { value: 'password123' },
       });
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: '新規登録' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Sign Up' }));
       });
 
       expect(mockFetch).toHaveBeenCalledWith('/api/auth/signup', {
@@ -160,15 +160,15 @@ describe('AuthForm', () => {
 
       render(<AuthForm mode="signup" />);
 
-      fireEvent.change(screen.getByLabelText('メールアドレス'), {
+      fireEvent.change(screen.getByLabelText('Email'), {
         target: { value: 'new@example.com' },
       });
-      fireEvent.change(screen.getByLabelText('パスワード'), {
+      fireEvent.change(screen.getByLabelText('Password'), {
         target: { value: 'password123' },
       });
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: '新規登録' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Sign Up' }));
       });
 
       expect(signIn).toHaveBeenCalledWith('credentials', {
@@ -187,15 +187,15 @@ describe('AuthForm', () => {
 
       render(<AuthForm mode="signup" />);
 
-      fireEvent.change(screen.getByLabelText('メールアドレス'), {
+      fireEvent.change(screen.getByLabelText('Email'), {
         target: { value: 'existing@example.com' },
       });
-      fireEvent.change(screen.getByLabelText('パスワード'), {
+      fireEvent.change(screen.getByLabelText('Password'), {
         target: { value: 'password123' },
       });
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: '新規登録' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Sign Up' }));
       });
 
       expect(screen.getByText('Email already exists')).toBeInTheDocument();
@@ -206,15 +206,15 @@ describe('AuthForm', () => {
     it('無効なメールで送信すると検証エラーが表示される', async () => {
       render(<AuthForm mode="login" />);
 
-      fireEvent.change(screen.getByLabelText('メールアドレス'), {
+      fireEvent.change(screen.getByLabelText('Email'), {
         target: { value: 'invalid' },
       });
-      fireEvent.change(screen.getByLabelText('パスワード'), {
+      fireEvent.change(screen.getByLabelText('Password'), {
         target: { value: 'password123' },
       });
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'ログイン' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Login' }));
       });
 
       expect(screen.getByText('無効なメールフォーマットです')).toBeInTheDocument();
@@ -224,15 +224,15 @@ describe('AuthForm', () => {
     it('パスワードが短すぎると検証エラーが表示される', async () => {
       render(<AuthForm mode="login" />);
 
-      fireEvent.change(screen.getByLabelText('メールアドレス'), {
+      fireEvent.change(screen.getByLabelText('Email'), {
         target: { value: 'test@example.com' },
       });
-      fireEvent.change(screen.getByLabelText('パスワード'), {
+      fireEvent.change(screen.getByLabelText('Password'), {
         target: { value: '1234567' },
       });
 
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'ログイン' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Login' }));
       });
 
       expect(screen.getByText('パスワードは8文字以上である必要があります')).toBeInTheDocument();
@@ -249,17 +249,17 @@ describe('AuthForm', () => {
 
       render(<AuthForm mode="login" />);
 
-      fireEvent.change(screen.getByLabelText('メールアドレス'), {
+      fireEvent.change(screen.getByLabelText('Email'), {
         target: { value: 'test@example.com' },
       });
-      fireEvent.change(screen.getByLabelText('パスワード'), {
+      fireEvent.change(screen.getByLabelText('Password'), {
         target: { value: 'password123' },
       });
 
-      fireEvent.click(screen.getByRole('button', { name: 'ログイン' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Login' }));
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: '送信中...' })).toBeDisabled();
+        expect(screen.getByRole('button', { name: 'Submitting...' })).toBeDisabled();
       });
 
       await act(async () => {

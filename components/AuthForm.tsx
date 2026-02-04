@@ -5,6 +5,7 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { signupSchema } from '@/lib/auth/validation';
+import { useLanguage } from '@/lib/i18n';
 
 interface AuthFormProps {
   mode: 'login' | 'signup';
@@ -12,6 +13,7 @@ interface AuthFormProps {
 
 export default function AuthForm({ mode }: AuthFormProps) {
   const router = useRouter();
+  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -52,14 +54,14 @@ export default function AuthForm({ mode }: AuthFormProps) {
       });
 
       if (!loginResult?.ok) {
-        setError('メールまたはパスワードが不正です');
+        setError(t('auth.error.invalid'));
         setIsLoading(false);
         return;
       }
 
       router.push('/');
     } catch {
-      setError('サーバーエラーが発生しました');
+      setError(t('auth.error.server'));
       setIsLoading(false);
     }
   };
@@ -69,19 +71,17 @@ export default function AuthForm({ mode }: AuthFormProps) {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-            {mode === 'login' ? 'ログイン' : '新規登録'}
+            {mode === 'login' ? t('auth.heading.login') : t('auth.heading.signup')}
           </h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
-            {mode === 'login'
-              ? '瞑想とメモ書きを記録しましょう'
-              : 'アカウントを作成してください'}
+            {mode === 'login' ? t('auth.description.login') : t('auth.description.signup')}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              メールアドレス
+              {t('auth.label.email')}
             </label>
             <input
               id="email"
@@ -96,7 +96,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              パスワード
+              {t('auth.label.password')}
             </label>
             <input
               id="password"
@@ -118,15 +118,15 @@ export default function AuthForm({ mode }: AuthFormProps) {
             disabled={isLoading}
             className="w-full py-2 px-4 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 disabled:bg-purple-400 disabled:cursor-not-allowed transition-colors"
           >
-            {isLoading ? '送信中...' : mode === 'login' ? 'ログイン' : '新規登録'}
+            {isLoading ? t('auth.button.submitting') : t('auth.button.' + mode)}
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
           {mode === 'login' ? (
-            <>アカウント未持ちの方は<Link href="/signup" className="text-purple-600 hover:underline">登録へ</Link></>
+            <>{t('auth.text.nosignup')}<Link href="/signup" className="text-purple-600 hover:underline">{t('auth.link.signup')}</Link></>
           ) : (
-            <>アカウント済みの方は<Link href="/login" className="text-purple-600 hover:underline">ログインへ</Link></>
+            <>{t('auth.text.withsignup')}<Link href="/login" className="text-purple-600 hover:underline">{t('auth.link.login')}</Link></>
           )}
         </p>
       </div>

@@ -3,12 +3,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { storage } from '@/lib/storage';
 import { settings } from '@/lib/settings';
+import { useLanguage } from '@/lib/i18n';
 
 const MAX_PAGES = 10;
 
 type Phase = 'writing' | 'break';
 
 export default function JournalingTimer({ onComplete }: { onComplete?: () => void }) {
+  const { t } = useLanguage();
   const [duration, setDuration] = useState(60);
   const [breakDuration, setBreakDuration] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -125,7 +127,7 @@ export default function JournalingTimer({ onComplete }: { onComplete?: () => voi
   };
 
   const handleStop = () => {
-    if (window.confirm('End journaling?')) {
+    if (window.confirm(t('journaling.confirm.end'))) {
       handleComplete();
     }
   };
@@ -141,7 +143,7 @@ export default function JournalingTimer({ onComplete }: { onComplete?: () => voi
       {!isRunning ? (
         <>
           <div className="text-center space-y-4">
-            <h2 className="text-3xl font-bold text-blue-600 dark:text-blue-400">Journaling</h2>
+            <h2 className="text-3xl font-bold text-blue-600 dark:text-blue-400">{t('journaling.heading')}</h2>
             <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
               {duration < 60 ? `${duration}s` : `${duration / 60} min`} × {MAX_PAGES} pages
             </p>
@@ -149,27 +151,27 @@ export default function JournalingTimer({ onComplete }: { onComplete?: () => voi
               Break: {breakDuration}s
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Change duration in Settings
+              {t('journaling.hint')}
             </p>
           </div>
           <button
             onClick={handleStart}
             className="px-12 py-5 bg-blue-600 text-white rounded-lg font-bold text-xl hover:bg-blue-700 transition-colors shadow-lg"
           >
-            Start
+            {t('journaling.button.start')}
           </button>
         </>
       ) : (
         <>
           <div className="text-center space-y-4">
             <div className="text-lg font-medium text-blue-600 dark:text-blue-400">
-              {phase === 'writing' ? `Page ${currentPage} / ${MAX_PAGES}` : 'Break'}
+              {phase === 'writing' ? t('journaling.phase.page', { page: currentPage, total: MAX_PAGES }) : t('journaling.phase.break')}
             </div>
             <div className="text-8xl font-bold tabular-nums text-blue-600 dark:text-blue-400">
               {formatTime(timeLeft)}
             </div>
             <div className="text-base text-gray-600 dark:text-gray-400">
-              {phase === 'writing' ? 'Write it out' : 'Rest until next page'}
+              {phase === 'writing' ? t('journaling.hint.write') : t('journaling.hint.rest')}
             </div>
           </div>
 
@@ -195,7 +197,7 @@ export default function JournalingTimer({ onComplete }: { onComplete?: () => voi
             onClick={handleStop}
             className="px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
           >
-            End
+            {t('journaling.button.end')}
           </button>
         </>
       )}

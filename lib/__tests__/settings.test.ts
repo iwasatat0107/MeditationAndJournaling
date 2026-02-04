@@ -5,12 +5,14 @@ describe('settings', () => {
     meditationDuration: 5,
     journalingDuration: 60,
     journalingBreakDuration: 10,
+    language: 'en',
   };
 
   const customSettings: AppSettings = {
     meditationDuration: 10,
     journalingDuration: 120,
     journalingBreakDuration: 15,
+    language: 'en',
   };
 
   beforeEach(() => {
