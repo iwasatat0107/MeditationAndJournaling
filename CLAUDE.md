@@ -250,67 +250,9 @@ PRを確認して「マージ承認」
 
 ---
 
-### ブランチ戦略
+### ブランチ戦略・Git ワークフロー
 
-**ブランチ構成**:
-- `main`: 本番環境用（安定版のみ）
-- `develop`: 開発用メインブランチ
-- `feature/issue-X-description`: 機能開発用
-- `bugfix/issue-X-description`: バグ修正用
-
-**命名規則**:
-- GitHub Issueと連携: `feature/issue-3-meditation-timer`
-- `/create-gh-branch X` コマンドで自動生成されます
-
-**変更種類ごとのブランチポリシー**:
-
-| 変更の種類 | 作業ブランチ | PR先 |
-|-----------|------------|------|
-| 機能開発 | `feature/issue-X-description` | `develop` |
-| バグ修正 | `bugfix/issue-X-description` | `develop` |
-| ドキュメント・サブエージェント変更 | `develop` | `main` |
-| 緊急修正（リリース済みバグのみ） | `hotfix/issue-X-description` | `main` + `develop` |
-
-**マージフロー**:
-1. `feature/*` または `bugfix/*` → `develop`: 機能追加・バグ修正時
-2. `develop` → `main`: リリース時（安定版）
-3. `hotfix/*` → `main` + `develop`: 緊急修正時のみ
-
-**運用ルール**:
-1. **mainへの直接コミットは絶対に行わない**: すべての変更は `develop` か `feature/*` で行う。`main` へのマージは PRのみ。
-2. **常駐ブランチの保護**: `main` と `develop` は削除禁止（常に保持）
-3. **作業ブランチのライフサイクル**:
-   - `feature/*`, `bugfix/*` はタスク完了後に必ず削除
-   - PRマージ後、ローカルブランチを即座に削除: `git branch -d feature/issue-X-...`
-4. **ローカルの理想状態**: タスク終了後は `main` と `develop` の2つのみ残す
-5. **差分の解消**: 作業終了時は `git status` で "working tree clean" の状態にする
-
----
-
-### Issue無しの変更ワークフロー
-
-Issueと紐付かない変更（ドキュメント、サブエージェント、設定等）の場合：
-
-```
-1. develop へチェックアウト
-2. 変更実装・コミット
-3. develop → main へのPR作成（GitHub MCP）
-4. ユーザー承認後、PRマージ
-5. ローカルの main を更新
-```
-
----
-
-### AIの動作ルール（コミット時の自動チェック）
-
-AIがコミットを実行する前に、必ず以下を確認する：
-
-1. **現在のブランチを確認**: `git rev-parse --abbrev-ref HEAD`
-2. **main の場合は拒否**:
-   - `develop` へチェックアウト
-   - ユーザーに確認: 「mainへの直接コミットは禁止です。developでコミットしますか？」
-3. **feature/* の場合**: そのままコミット・プッシュ
-4. **develop の場合**: コミット・プッシュ後、`develop → main` へのPRを自動確認
+詳細は `.claude/rules/git-workflow.md` を参照。
 
 ---
 
@@ -707,7 +649,4 @@ claude mcp list
 
 ### セキュリティ
 
-- パスワード: bcryptjs（ハッシュ化）
-- 環境変数保護（.env.local、Gitignore済み）
-- 入力検証: Zod
-- 認証: NextAuth.js v5 (beta.30)、JWT セッション
+詳細は `.claude/rules/security.md` を参照。
