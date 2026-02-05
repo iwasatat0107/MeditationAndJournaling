@@ -76,6 +76,11 @@ const en: Record<string, string> = {
   'auth.link.login': 'Log in',
   'auth.text.nosignup': "Don't have an account? ",
   'auth.text.withsignup': 'Already have an account? ',
+  // unit
+  'unit.min': 'min',
+  'unit.sec': 's',
+  'journaling.unit.pages': '× {total} pages',
+  'journaling.unit.break': 'Break: {duration}s',
 };
 
 const ja: Record<string, string> = {
@@ -142,6 +147,11 @@ const ja: Record<string, string> = {
   'auth.link.login': 'ログインへ',
   'auth.text.nosignup': 'アカウント未持ちの方は',
   'auth.text.withsignup': 'アカウント済みの方は',
+  // unit
+  'unit.min': '分',
+  'unit.sec': '秒',
+  'journaling.unit.pages': '× {total} ページ',
+  'journaling.unit.break': '準備: {duration}秒',
 };
 
 export const translations: Record<Language, Record<string, string>> = { en, ja };

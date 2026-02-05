@@ -127,7 +127,7 @@ export default function MeditationTimer({
                     <span className="text-display text-meditation-700 dark:text-meditation-300">
                       {duration}
                     </span>
-                    <span className="text-caption text-muted-foreground">min</span>
+                    <span className="text-caption text-muted-foreground">{t("unit.min")}</span>
                   </div>
                 </CircularProgress>
               </div>
