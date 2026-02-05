@@ -3,6 +3,12 @@ import { auth } from './auth';
 
 const PUBLIC_ROUTES = ['/login', '/signup'];
 
+export const config = {
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|manifest.json).*)',
+  ],
+};
+
 export default async function middleware(request: { nextUrl: URL }) {
   const { nextUrl } = request;
   const session = await auth();
