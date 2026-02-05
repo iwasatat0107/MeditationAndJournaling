@@ -1,7 +1,6 @@
 ---
 name: review
 description: コード・PRのレビューを実行し、重要度順に課題を報告する。
-disable-model-invocation: true
 argument-hint: "[file-or-pr-number]"
 allowed-tools: Read, Grep, Glob, Bash(git *)
 ---
