@@ -82,7 +82,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-950 dark:to-neutral-900">
+    <div className="min-h-screen bg-gradient-to-br from-neutral-950 to-neutral-900">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <motion.header
@@ -130,7 +130,7 @@ export default function Home() {
           </div>
 
           {/* Title */}
-          <h1 className="text-heading-1 text-foreground mb-2">{t("page.heading")}</h1>
+          <h1 className="text-heading-1 bg-gradient-to-r from-meditation-400 to-journaling-400 bg-clip-text text-transparent mb-2">{t("page.heading")}</h1>
           <p className="text-body text-muted-foreground">{t("page.description")}</p>
         </motion.header>
 
@@ -177,9 +177,9 @@ export default function Home() {
             {activeTab === "meditation" && (
               <motion.div
                 key="meditation"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
                 transition={appleTransition}
               >
                 <MeditationTimer onComplete={handleComplete} />
@@ -188,9 +188,9 @@ export default function Home() {
             {activeTab === "journaling" && (
               <motion.div
                 key="journaling"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
                 transition={appleTransition}
               >
                 <JournalingTimer onComplete={handleComplete} />
@@ -199,9 +199,9 @@ export default function Home() {
             {activeTab === "history" && (
               <motion.div
                 key="history"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
                 transition={appleTransition}
               >
                 <History key={refreshKey} />
