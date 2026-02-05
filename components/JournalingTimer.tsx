@@ -181,14 +181,14 @@ export default function JournalingTimer({
                     {duration < 60 ? duration : duration / 60}
                   </span>
                   <span className="text-heading-3 text-muted-foreground">
-                    {duration < 60 ? "s" : "min"}
+                    {duration < 60 ? t("unit.sec") : t("unit.min")}
                   </span>
                   <span className="text-heading-3 text-muted-foreground">
-                    × {MAX_PAGES} pages
+                    {t("journaling.unit.pages", { total: MAX_PAGES })}
                   </span>
                 </div>
                 <p className="text-caption text-muted-foreground">
-                  Break: {breakDuration}s
+                  {t("journaling.unit.break", { duration: breakDuration })}
                 </p>
               </div>
 
