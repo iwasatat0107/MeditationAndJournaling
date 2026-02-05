@@ -214,12 +214,18 @@ PRを確認して「マージ承認」
 
 **AIの処理**:
 3. 承認後、GitHub MCPでPRをマージ
-4. マージ後、ローカルブランチを削除
+4. **Issue を手動クローズ**（GitHub MCP `update_issue` で `state: "closed"`）
+5. マージ後、ローカルブランチを削除
    ```bash
    git checkout develop
    git pull origin develop
    git branch -d feature/issue-X-description
    ```
+
+> **なぜ手動クローズが必要か**
+> GitHub の `Closes #X` キーワード（PR本文・コミットメッセージ）は、PRがリポジトリの**デフォルトブランチ（`main`）**へマージされた時のみ自動で Issue を閉じる。
+> このプロジェクトでは `feature → develop` へマージするため、`Closes #X` で自動クローズは動作しない。
+> したがって、PRマージ直後に必ず `update_issue` で `state: "closed"` とセットする。
 
 ---
 
@@ -257,7 +263,7 @@ AI: PR作成 → PR URL提示
   ↓
 ユーザー: 「マージ承認」
   ↓
-AI: PRマージ、ブランチ削除
+AI: PRマージ、Issue #3を手動クローズ、ブランチ削除
 AI: 「Issue #3の対応が完了しました」
 ```
 

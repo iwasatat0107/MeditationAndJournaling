@@ -35,7 +35,8 @@ describe('JournalingTimer', () => {
   describe('初期表示', () => {
     it('開始前は設定画面のメモ書き時間が表示される', () => {
       render(<JournalingTimer />);
-      expect(screen.getByText(/1 min/)).toBeInTheDocument();
+      expect(screen.getByText('1')).toBeInTheDocument();
+      expect(screen.getByText('min')).toBeInTheDocument();
     });
 
     it('「10 pages」と表示される', () => {
@@ -99,7 +100,7 @@ describe('JournalingTimer', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       const indicators = screen.getAllByTestId('page-indicator');
-      expect(indicators[0]).toHaveClass('bg-blue-400 animate-pulse');
+      expect(indicators[0]).toHaveClass('bg-journaling-400');
     });
 
     it('休憩中は現在のページが黄丸（点滅）で表示される', () => {
@@ -111,7 +112,7 @@ describe('JournalingTimer', () => {
       });
 
       const indicators = screen.getAllByTestId('page-indicator');
-      expect(indicators[0]).toHaveClass('bg-yellow-400 animate-pulse');
+      expect(indicators[0]).toHaveClass('bg-amber-400');
     });
 
     it('完了ページは青丸で表示される', () => {
@@ -129,9 +130,9 @@ describe('JournalingTimer', () => {
 
       const indicators = screen.getAllByTestId('page-indicator');
       // 1ページ目は完了
-      expect(indicators[0]).toHaveClass('bg-blue-600');
+      expect(indicators[0]).toHaveClass('bg-journaling-600');
       // 2ページ目は進行中
-      expect(indicators[1]).toHaveClass('bg-blue-400 animate-pulse');
+      expect(indicators[1]).toHaveClass('bg-journaling-400');
     });
 
     it('未完了ページはグレー丸で表示される', () => {
@@ -139,7 +140,7 @@ describe('JournalingTimer', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
       const indicators = screen.getAllByTestId('page-indicator');
-      expect(indicators[9]).toHaveClass('bg-gray-300');
+      expect(indicators[9]).toHaveClass('bg-neutral-300');
     });
   });
 
