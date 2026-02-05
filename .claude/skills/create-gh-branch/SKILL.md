@@ -1,20 +1,21 @@
 ---
 name: create-gh-branch
 description: GitHub MCPを使い、Issue情報に基づいてGitブランチを生成し、チェックアウトします。
+disable-model-invocation: true
+argument-hint: "[issue-number]"
 ---
 
 # 概要
 
-指定されたGitHub Issue番号を基に、**GitHub MCP** を通じてIssue情報を自動取得し、命名規則に従ったブランチ名を生成します。その後、そのブランチを作成し、チェックアウトします。
+指定されたGitHub Issue番号（`$ARGUMENTS`）を基に、**GitHub MCP** を通じてIssue情報を自動取得し、命名規則に従ったブランチ名を生成します。その後、そのブランチを作成し、チェックアウトします。
 
 # 前提条件
 
 - GitHub MCPがインストールされ、利用可能な状態であること。
-- ユーザーはコマンドの引数としてIssue番号のみを与えます。
 
 # 処理フロー
 
-1.  **Issue情報の取得**: **GitHub MCPの `issues.get_issue` ツール**を利用して、指定されたIssue番号のタイトルを取得します。
+1.  **Issue情報の取得**: **GitHub MCPの `issues.get_issue` ツール**を利用して、Issue番号 `$ARGUMENTS` のタイトルを取得します。
 2.  **ブランチ名の生成**: 取得したIssue番号とタイトルを「ブランチ命名規則」に従って整形し、ブランチ名を生成します。
 3.  **ブランチの作成とチェックアウト**: Bashコマンド (`git checkout -b`) を利用して、生成された名前のブランチを作成し、チェックアウトします。
 

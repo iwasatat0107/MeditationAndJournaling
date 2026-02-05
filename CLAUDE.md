@@ -93,7 +93,7 @@ rm -rf .next
 
 #### Step 2-4: TDDサイクル（Red → Green → Refactor）
 
-`/tdd` スキルを使用。詳細は `.claude/commands/tdd.md` を参照。
+`/tdd` スキルを使用。詳細は `.claude/skills/tdd/SKILL.md` を参照。
 
 ---
 

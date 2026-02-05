@@ -1,6 +1,7 @@
 ---
 name: tdd
 description: TDDサイクル（Red→Green→Refactor）を実行し、テスト作成→実装→リファクタリングまで導く。
+disable-model-invocation: true
 ---
 
 # TDD サイクル
