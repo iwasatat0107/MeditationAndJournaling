@@ -1,6 +1,5 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import { db, users } from './lib/db';
 import { eq } from 'drizzle-orm';
 import { verifyPassword } from './lib/auth/utils';
 
@@ -18,6 +17,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const email = credentials.email as string;
         const password = credentials.password as string;
+
+        // Edge Runtime で db モジュールを読み込まないよう動的インポート
+        const { db, users } = await import('./lib/db');
 
         // ユーザーをデータベースから検索
         const [user] = await db
