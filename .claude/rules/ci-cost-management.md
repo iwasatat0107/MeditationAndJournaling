@@ -2,18 +2,21 @@
 
 ## GitHub Actions 使用量の監視
 
-### 月次使用量の確認方法
+### カスタムコマンドで確認（推奨）
 
 ```bash
-# 今月の使用量を確認（GitHubの設定ページで確認）
-# Settings → Billing → Plans and usage → Actions
+npm run ci:usage
 ```
 
-または、gh CLI で確認：
+**出力内容**:
+- 📊 実行統計（総回数、成功、失敗）
+- ⏱️  使用時間（今月の使用、無料枠、残り、使用率）
+- 警告判定（🟢正常 / 🟡注意 / 🔴警告）
+
+### 手動確認（GitHub Web UI）
 
 ```bash
-# 最近のワークフロー実行履歴
-gh run list --limit 30 --json createdAt,startedAt,updatedAt,conclusion
+# Settings → Billing → Plans and usage → Actions
 ```
 
 ### 使用量計算の目安
@@ -104,34 +107,21 @@ GitHub Actions を完全停止し、Vercel のビルドチェックのみに依�
 
 ## 使用量チェックの実行方法
 
-ユーザーが「GitHub Actions の使用量を確認して」と依頼した場合、AIは以下を実行：
-
-### 1. 実行履歴の取得
+### 方法1: カスタムコマンド（推奨）
 
 ```bash
-# 今月の実行履歴を取得（最大100件）
-gh run list --limit 100 --json createdAt,startedAt,updatedAt,conclusion
+npm run ci:usage
 ```
 
-### 2. 使用時間の計算
+**実装**: `scripts/check-ci-usage.sh`
+- 今月の実行履歴を自動取得
+- 使用時間を計算（`updatedAt - startedAt`）
+- カラー表示でレポート出力
+- 警告判定（🟢正常 / 🟡注意 / 🔴警告）
 
-各実行の `updatedAt - startedAt` を計算し、合計時間を算出
+### 方法2: AIに依頼
 
-### 3. レポート作成
-
-```
-【GitHub Actions 使用量レポート】
-- 今月の実行回数: X回
-- 今月の使用時間: Y分 / 2,000分
-- 残り枠: Z分
-- 使用率: W%
-```
-
-### 4. 警告判定
-
-- **1,800分以上**: 🔴 警告を表示し、対策オプションを提示
-- **1,500-1,800分**: 🟡 注意喚起
-- **1,500分未満**: 🟢 正常
+ユーザーが「GitHub Actions の使用量を確認して」と依頼した場合、AIは `npm run ci:usage` を実行してレポートを取得
 
 ### 推奨確認タイミング
 
