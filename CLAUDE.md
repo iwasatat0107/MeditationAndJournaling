@@ -325,9 +325,13 @@ npm run ci:usage
 
 - **`body` パラメータで `\n` を使わない**: `create_issue`, `update_issue`, `create_pull_request` の `body` に `\n` を書くと literal文字として崩れる。実際の改行で記述すること。
 
+- **GitHub MCP を常に使用し、gh CLI にフォールバックしない**: GitHub の操作（Issue、PR、リポジトリ等）は必ず GitHub MCP ツール（`mcp__github__*`）を使用すること。`gh` CLI コマンド（`gh issue`, `gh pr`, `gh api` 等）は使用禁止。ツール呼び出しが中断された場合は、同じ MCP ツールで再試行すること。PreToolUse フック（`prevent-gh-cli.sh`）で自動ブロックされる。
+  - **理由**: GitHub MCP は gh CLI と比較して、トークン消費が少なく、速度・信頼性に優れる
+  - **例外**: `gh pr checks`（CIステータス確認）のみ許可（MCP に同等機能がないため）
+
 - **PRマージ前の必須チェック**: `merge_pull_request` を実行する前に**必ず**以下を確認すること
   1. `gh pr checks <PR番号>` ですべてのチェックが `pass` になるまで待つ（pending の場合は待機）
-  2. `gh pr view <PR番号> --json mergeable,mergeStateStatus` で `mergeable: "MERGEABLE"` を確認
+  2. `mcp__github__get_pull_request` で マージ可能性を確認
   3. 上記2つの条件をクリアした後のみマージを実行
   4. マージ失敗時はエラー原因を特定し、適切に対処（コンフリクト解決等）
 
