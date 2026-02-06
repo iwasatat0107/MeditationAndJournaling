@@ -1,4 +1,5 @@
-import { settings, AppSettings } from '../settings';
+import { settings } from '../settings';
+import type { AppSettings } from '@/types';
 
 describe('settings', () => {
   const defaultSettings: AppSettings = {

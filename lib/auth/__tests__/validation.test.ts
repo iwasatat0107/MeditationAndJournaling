@@ -29,7 +29,9 @@ describe('signupSchema', () => {
       });
 
       expect(result.success).toBe(false);
-      expect(result.error.issues[0].path).toContain('email');
+      if (!result.success) {
+        expect(result.error.issues[0].path).toContain('email');
+      }
     });
 
     it('メールが空文字で検証に失敗する', () => {
@@ -59,7 +61,9 @@ describe('signupSchema', () => {
       });
 
       expect(result.success).toBe(false);
-      expect(result.error.issues[0].path).toContain('password');
+      if (!result.success) {
+        expect(result.error.issues[0].path).toContain('password');
+      }
     });
 
     it('パスワードが空文字で検証に失敗する', () => {

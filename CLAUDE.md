@@ -221,9 +221,8 @@ PRを確認して「マージ承認」
 ```
 app/
   page.tsx                          # タブ切り替え、認証チェック、ログアウト、Settings表示
-  layout.tsx                        # メタデータ、Providers래핑
+  layout.tsx                        # メタデータ、Providersラッピング
   providers.tsx                     # SessionProvider ラッパー（'use client'）
-  globals.css                       # Tailwind
   login/
     page.tsx                        # ログインページ（AuthForm mode="login"）
   signup/
@@ -232,8 +231,10 @@ app/
     auth/
       [...nextauth]/route.ts        # NextAuth.js ルートハンドラ
       signup/route.ts               # POST ユーザー登録API（バリデーション・重複チェック・ハッシュ・INSERT）
+  __tests__/                        # アプリケーションテスト（2ファイル）
 
 auth.ts                             # NextAuth.js 設定（Credentialsプロバイダー）
+middleware.ts                       # 認証ミドルウェア
 
 components/
   AuthForm.tsx                      # 認証フォーム（login/signup モード切り替え）
@@ -241,11 +242,16 @@ components/
   JournalingTimer.tsx               # メモ書きタイマー（青）
   History.tsx                       # 履歴・統計
   Settings.tsx                      # 設定モーダル
+  ui/
+    CircularProgress.tsx            # 円形プログレスバー（タイマー表示）
   __tests__/                        # コンポーネントテスト（5ファイル）
 
 lib/
   storage.ts                        # Session管理（LocalStorage）
   settings.ts                       # AppSettings管理（LocalStorage）
+  animations.ts                     # Framer Motion アニメーション定義
+  i18n.tsx                          # 多言語対応（英語・日本語）
+  cn.ts                             # Tailwind クラス結合ユーティリティ
   auth/
     validation.ts                   # Zod signupSchema（サーバー・クライアント共用）
     utils.ts                        # パスワードハッシュ化・検証（bcryptjs）
@@ -255,14 +261,17 @@ lib/
   db/
     schema.ts                       # Drizzle ORM スキーマ（5テーブル）
     index.ts                        # DB接続設定
-  __tests__/                        # ユーティリティテスト（2ファイル）
+  __tests__/                        # ユーティリティテスト（3ファイル）
 
 types/
-  index.ts                          # Session, AppSettings, DailyStats
+  index.ts                          # Session, AppSettings, DailyStats, Language
   next-auth.d.ts                    # NextAuth.js 型拡張
+  jest.d.ts                         # Jest カスタムマッチャー型定義
 
 drizzle/                            # マイグレーションファイル
 drizzle.config.ts                   # Drizzle Kit設定
+
+__tests__/                          # ミドルウェアテスト（1ファイル）
 ```
 
 ---
