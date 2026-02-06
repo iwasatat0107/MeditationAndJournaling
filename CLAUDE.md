@@ -296,6 +296,13 @@ __tests__/                          # ミドルウェアテスト（1ファイ�
 
 ## GitHub MCP の注意事項
 
+- **リポジトリ情報**: このプロジェクトの正しいリポジトリ情報
+  - **owner**: `iwasatat0107` （末尾は `0107`、`iwasatatm4` ではない）
+  - **repo**: `MeditationAndJournaling`
+  - GitHub MCP の全ての呼び出しで必ずこの owner 名を使用すること
+
+- **必ず日本語で作成する**: `create_issue`, `update_issue`, `create_pull_request` のすべての項目（`title`, `body`）は**必ず日本語**で記述すること。英語での作成は禁止。
+
 - **`body` パラメータで `\n` を使わない**: `create_issue`, `update_issue`, `create_pull_request` の `body` に `\n` を書くと literal文字として崩れる。実際の改行で記述すること。
 
 ---
