@@ -305,6 +305,12 @@ __tests__/                          # ミドルウェアテスト（1ファイ�
 
 - **`body` パラメータで `\n` を使わない**: `create_issue`, `update_issue`, `create_pull_request` の `body` に `\n` を書くと literal文字として崩れる。実際の改行で記述すること。
 
+- **PRマージ前の必須チェック**: `merge_pull_request` を実行する前に**必ず**以下を確認すること
+  1. `gh pr checks <PR番号>` ですべてのチェックが `pass` になるまで待つ（pending の場合は待機）
+  2. `gh pr view <PR番号> --json mergeable,mergeStateStatus` で `mergeable: "MERGEABLE"` を確認
+  3. 上記2つの条件をクリアした後のみマージを実行
+  4. マージ失敗時はエラー原因を特定し、適切に対処（コンフリクト解決等）
+
 ---
 
 ## サブエージェント
