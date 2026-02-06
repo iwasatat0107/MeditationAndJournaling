@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { settings, AppSettings } from "@/lib/settings";
+import { settings } from "@/lib/settings";
+import type { AppSettings } from "@/types";
 import { useLanguage, LANGUAGES, LANGUAGE_LABELS } from "@/lib/i18n";
 import { cn } from "@/lib/cn";
 import { modalBackdrop, modalContent, appleTransition } from "@/lib/animations";

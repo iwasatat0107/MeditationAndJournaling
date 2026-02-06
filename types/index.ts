@@ -17,3 +17,10 @@ export interface DailyStats {
 }
 
 export type Language = 'en' | 'ja';
+
+export interface AppSettings {
+  meditationDuration: number; // 分
+  journalingDuration: number; // 秒
+  journalingBreakDuration: number; // 秒
+  language: Language;
+}

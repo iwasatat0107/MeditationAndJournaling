@@ -6,13 +6,13 @@ jest.mock('../auth', () => ({
 }));
 
 // NextResponse のモック
-const mockRedirect = jest.fn(() => ({ type: 'redirect' }));
+const mockRedirect = jest.fn((url: URL | string) => ({ type: 'redirect', url }));
 const mockNext = jest.fn(() => ({ type: 'next' }));
 
 jest.mock('next/server', () => ({
   NextResponse: {
-    redirect: (...args: unknown[]) => mockRedirect(...args),
-    next: (...args: unknown[]) => mockNext(...args),
+    redirect: (url: URL | string) => mockRedirect(url),
+    next: () => mockNext(),
   },
   NextRequest: jest.fn(),
 }));
@@ -42,8 +42,8 @@ describe('認証ミドルウェア', () => {
       await middleware(request as any);
 
       expect(mockRedirect).toHaveBeenCalledTimes(1);
-      const redirectUrl = mockRedirect.mock.calls[0][0];
-      expect(redirectUrl.pathname).toBe('/login');
+      const redirectUrl = mockRedirect.mock.calls[0]?.[0] as URL;
+      expect(redirectUrl?.pathname).toBe('/login');
     });
 
     it('公開ルート "/login" にアクセスと通過される', async () => {
@@ -75,8 +75,8 @@ describe('認証ミドルウェア', () => {
       await middleware(request as any);
 
       expect(mockRedirect).toHaveBeenCalledTimes(1);
-      const redirectUrl = mockRedirect.mock.calls[0][0];
-      expect(redirectUrl.pathname).toBe('/login');
+      const redirectUrl = mockRedirect.mock.calls[0]?.[0] as URL;
+      expect(redirectUrl?.pathname).toBe('/login');
     });
   });
 
@@ -98,8 +98,8 @@ describe('認証ミドルウェア', () => {
       await middleware(request as any);
 
       expect(mockRedirect).toHaveBeenCalledTimes(1);
-      const redirectUrl = mockRedirect.mock.calls[0][0];
-      expect(redirectUrl.pathname).toBe('/');
+      const redirectUrl = mockRedirect.mock.calls[0]?.[0] as URL;
+      expect(redirectUrl?.pathname).toBe('/');
     });
 
     it('"/signup" にアクセスると "/" へリダイレクトされる', async () => {
@@ -107,8 +107,8 @@ describe('認証ミドルウェア', () => {
       await middleware(request as any);
 
       expect(mockRedirect).toHaveBeenCalledTimes(1);
-      const redirectUrl = mockRedirect.mock.calls[0][0];
-      expect(redirectUrl.pathname).toBe('/');
+      const redirectUrl = mockRedirect.mock.calls[0]?.[0] as URL;
+      expect(redirectUrl?.pathname).toBe('/');
     });
 
     it('APIルート "/api/sessions" にアクセスると通過される', async () => {
