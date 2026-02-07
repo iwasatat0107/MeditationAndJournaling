@@ -23,7 +23,7 @@ const tabs: { id: Tab; colorClass: string }[] = [
 export default function Home() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState<Tab>("meditation");
   const [refreshKey, setRefreshKey] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
@@ -45,7 +45,7 @@ export default function Home() {
         width: activeRef.offsetWidth,
       });
     }
-  }, [activeTab]);
+  }, [activeTab, language]);
 
   if (status === "loading" || status === "unauthenticated") {
     return (
@@ -172,7 +172,7 @@ export default function Home() {
         </motion.div>
 
         {/* Main content */}
-        <main className="flex justify-center min-h-[400px]">
+        <main className="flex justify-center min-h-[400px] w-full">
           <AnimatePresence mode="wait">
             {activeTab === "meditation" && (
               <motion.div
@@ -181,6 +181,7 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
                 transition={appleTransition}
+                className="w-full max-w-4xl"
               >
                 <MeditationTimer onComplete={handleComplete} />
               </motion.div>
@@ -192,6 +193,7 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
                 transition={appleTransition}
+                className="w-full max-w-4xl"
               >
                 <JournalingTimer onComplete={handleComplete} />
               </motion.div>
@@ -203,6 +205,7 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
                 transition={appleTransition}
+                className="w-full max-w-2xl"
               >
                 <History key={refreshKey} />
               </motion.div>
