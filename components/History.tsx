@@ -115,7 +115,7 @@ export default function History() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {statCards.map((card, index) => (
           <motion.div
-            key={card.label}
+            key={index}
             variants={staggerItem}
             transition={{ ...appleTransition, delay: index * 0.1 }}
             whileHover={cardHover}
@@ -135,7 +135,7 @@ export default function History() {
       </div>
 
       {/* Session list */}
-      <motion.div variants={fadeInUp} className="space-y-4">
+      <motion.div variants={fadeInUp} className="space-y-4 w-full">
         <h3 className="text-heading-3 text-foreground">{t("history.heading")}</h3>
 
         {sessions.length === 0 ? (
@@ -147,7 +147,7 @@ export default function History() {
             <div className="text-muted-foreground">{t("history.empty")}</div>
           </motion.div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3 w-full">
             <AnimatePresence mode="popLayout">
               {sessions.map((session, index) => (
                 <motion.div
@@ -160,15 +160,18 @@ export default function History() {
                   whileHover={{ y: -2 }}
                   className={cn(
                     "card-elevated p-4",
-                    "flex justify-between items-start",
+                    "w-full",
+                    "grid gap-4 items-start",
                     "group"
                   )}
+                  style={{ gridTemplateColumns: "1fr 64px" }}
                 >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-3 mb-2 flex-wrap">
                       <span
                         className={cn(
-                          "px-3 py-1 rounded-apple-sm text-xs font-semibold",
+                          "px-3 py-1 rounded-apple-sm text-xs font-semibold text-center shrink-0",
+                          "w-[100px]",
                           session.type === "meditation"
                             ? "bg-meditation-100 text-meditation-700 dark:bg-meditation-900/30 dark:text-meditation-300"
                             : "bg-journaling-100 text-journaling-700 dark:bg-journaling-900/30 dark:text-journaling-300"
@@ -178,7 +181,7 @@ export default function History() {
                           ? t("history.type.meditation")
                           : t("history.type.journaling")}
                       </span>
-                      <span className="text-caption font-medium text-foreground">
+                      <span className="text-caption font-medium text-foreground shrink-0 w-[60px]">
                         {formatDuration(session.duration)}
                       </span>
                     </div>
@@ -194,7 +197,8 @@ export default function History() {
                   <motion.button
                     onClick={() => handleDelete(session.id)}
                     className={cn(
-                      "ml-4 px-3 py-1 rounded-apple-sm text-small font-medium",
+                      "px-3 py-1 rounded-apple-sm text-small font-medium shrink-0",
+                      "w-[64px] text-center",
                       "text-red-500 hover:text-white",
                       "hover:bg-red-500",
                       "opacity-0 group-hover:opacity-100",
