@@ -41,6 +41,12 @@ npm run db:migrate    # マイグレーション実行
 npm run db:push       # スキーマプッシュ
 npm run db:studio     # Drizzle Studio起動
 
+# CI/CD
+npm run ci:usage      # GitHub Actions 使用量確認
+
+# プロジェクト管理
+/status               # 現在の状況分析・次のタスク提案（AI自律）
+
 # キャッシュクリア
 rm -rf .next
 ```
@@ -83,11 +89,14 @@ rm -rf .next
 ```
 
 **AIの処理**:
-1. GitHub MCPで Issue情報を取得
-2. `/create-gh-branch X` を実行してブランチ作成
+1. **未コミット変更のチェック（最優先）**
+   - `git status --short` で変更を確認
+   - 変更がある場合は**必ずコミットを提案**し、コミット完了後に次へ進む
+2. GitHub MCPで Issue情報を取得
+3. `/create-gh-branch X` を実行してブランチ作成
    - ブランチ名例: `feature/issue-3-test-issue`
-3. Issueの内容を分析し、関連コードを調査
-4. 実装方針をユーザーに提示
+4. Issueの内容を分析し、関連コードを調査
+5. 実装方針をユーザーに提示
 
 ---
 
