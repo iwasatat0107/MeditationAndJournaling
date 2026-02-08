@@ -24,6 +24,9 @@ function createMockRequest(url: string) {
   return {
     nextUrl: new URL(url, 'http://localhost:3000'),
     url,
+    headers: new Map([
+      ['x-forwarded-for', '127.0.0.1'],
+    ]),
   };
 }
 
