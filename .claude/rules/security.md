@@ -12,6 +12,16 @@
 - 認証フレームワーク: NextAuth.js v5 (beta.30)、JWT セッション
 - Credentials プロバイダーのみ使用（OAuth は現時点で未導入）
 
+## Rate Limiting
+
+- 認証エンドポイントに Rate Limiting を実装（ブルートフォース攻撃防止）
+- 本番環境: Upstash Redis ベース（`@upstash/ratelimit`）
+- 開発環境: メモリベース（環境変数なしで自動切り替え）
+- 制限:
+  - `/api/auth/signup`: 10リクエスト/分（IPごと）
+  - `/api/auth/*`: 20リクエスト/分（IPごと）
+- 制限超過時: 429 Too Many Requests + Retry-After ヘッダー
+
 ## 入力検証
 
 - サーバー・クライアント共用スキーマを `Zod` で定義（`lib/auth/validation.ts`）
