@@ -148,36 +148,31 @@ rm -rf .next
 
 ---
 
-#### Step 6: PR確認・作成とマージ
+#### Step 6: PR作成と Auto-merge 設定
 
 **AIの処理**:
-1. PRの有無を自動確認:
-   ```bash
-   gh pr list --head <現在のブランチ>
-   ```
-   - PRが既に存在する場合: ステップ3へ
-   - PRが存在しない場合: ステップ2へ
-2. GitHub MCPでPRを作成（PRがない場合のみ）:
+1. GitHub MCPでPRを作成:
    - タイトル: `feat: 瞑想タイマー機能の実装 (#X)`
    - 本文: 変更内容、テスト結果、スクリーンショット（必要に応じて）
-   - ラベル: `feature`, `enhancement`
    - ベースブランチ: `develop`
-3. PR URLをユーザーに提示
-
-**ユーザー操作**:
-```
-PRを確認して「マージ承認」
-```
-
-**AIの処理**:
-3. 承認後、GitHub MCPでPRをマージ
-4. **Issue を手動クローズ**（GitHub MCP `update_issue` で `state: "closed"`）
-5. マージ後、ローカルブランチを削除
+2. **Auto-merge を即座に有効化**:
+   ```bash
+   gh pr merge --auto --squash <PR番号>
+   ```
+   - CIが通過したら自動的にマージ（AIは待機不要）
+3. **Issue を手動クローズ**（GitHub MCP `update_issue` で `state: "closed"`）
+4. **ローカルブランチを削除**:
    ```bash
    git checkout develop
    git pull origin develop
    git branch -d feature/issue-X-description
    ```
+5. PR URLをユーザーに提示して完了報告
+
+> **Auto-merge の利点**
+> - AIはCIの完了を待たずに次のタスクへ進める
+> - GitHub が自動的にCIを監視してマージ
+> - CI失敗時は Auto-merge が自動キャンセルされる
 
 > **なぜ手動クローズが必要か**
 > GitHub の `Closes #X` キーワード（PR本文・コミットメッセージ）は、PRがリポジトリの**デフォルトブランチ（`main`）**へマージされた時のみ自動で Issue を閉じる。
@@ -336,13 +331,16 @@ npm run ci:usage
 
 - **GitHub MCP を常に使用し、gh CLI にフォールバックしない**: GitHub の操作（Issue、PR、リポジトリ等）は必ず GitHub MCP ツール（`mcp__github__*`）を使用すること。`gh` CLI コマンド（`gh issue`, `gh pr`, `gh api` 等）は使用禁止。ツール呼び出しが中断された場合は、同じ MCP ツールで再試行すること。PreToolUse フック（`prevent-gh-cli.sh`）で自動ブロックされる。
   - **理由**: GitHub MCP は gh CLI と比較して、トークン消費が少なく、速度・信頼性に優れる
-  - **例外**: `gh pr checks`（CIステータス確認）のみ許可（MCP に同等機能がないため）
+  - **例外（2つのみ許可）**:
+    - `gh pr merge --auto --squash <PR番号>`: Auto-merge 設定（MCP に同等機能がない）
+    - `gh pr checks <PR番号>`: CIステータス確認（MCP に同等機能がない）
 
-- **PRマージ前の必須チェック**: `merge_pull_request` を実行する前に**必ず**以下を確認すること
-  1. `gh pr checks <PR番号>` ですべてのチェックが `pass` になるまで待つ（pending の場合は待機）
-  2. `mcp__github__get_pull_request` で マージ可能性を確認
-  3. 上記2つの条件をクリアした後のみマージを実行
-  4. マージ失敗時はエラー原因を特定し、適切に対処（コンフリクト解決等）
+- **PR Auto-merge ワークフロー**（推奨）:
+  1. `mcp__github__create_pull_request` でPRを作成
+  2. `gh pr merge --auto --squash <PR番号>` で Auto-merge を即座に設定
+  3. `mcp__github__update_issue` で Issue をクローズ
+  4. ローカルブランチを削除（`git branch -d`）
+  5. **AIは待機せず、次のタスクへ進む**（CIは GitHub が自動監視）
 
 ---
 
