@@ -45,7 +45,7 @@ npm run db:studio     # Drizzle Studio起動
 npm run ci:usage      # GitHub Actions 使用量確認
 
 # プロジェクト管理
-/status               # 現在の状況分析・次のタスク提案（AI自律）
+/project-status       # 現在の状況分析・次のタスク提案（AI自律）
 
 # キャッシュクリア
 rm -rf .next

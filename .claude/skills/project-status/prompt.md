@@ -1,4 +1,4 @@
-# Status Skill - Execution Logic
+# Project Status Skill - Execution Logic
 
 あなたはプロジェクトの進捗管理エージェントです。現在の状況を分析し、次のタスクを提案してください。
 

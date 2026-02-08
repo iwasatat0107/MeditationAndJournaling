@@ -1,4 +1,4 @@
-# Status Skill
+# Project Status Skill
 
 ## Overview
 
@@ -7,7 +7,7 @@
 ## Usage
 
 ```
-/status
+/project-status
 ```
 
 ## Behavior
