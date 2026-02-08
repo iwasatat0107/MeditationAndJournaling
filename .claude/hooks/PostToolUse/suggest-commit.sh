@@ -17,10 +17,20 @@ if ! git rev-parse --is-inside-work-tree &>/dev/null; then
   exit 0
 fi
 
+# 現在のブランチを取得
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
+
+# Issue着手中（作業ブランチ）の場合はスキップ
+# feature/*, bugfix/*, hotfix/* ブランチではコミット提案しない
+if [[ "$CURRENT_BRANCH" =~ ^(feature|bugfix|hotfix)/ ]]; then
+  exit 0
+fi
+
 # 変更ファイル数をカウント（ステージング + 未ステージング）
 CHANGED_FILES=$(git status --short | wc -l | tr -d ' ')
 
 # しきい値を超えたら警告メッセージを出力
+# develop, main ブランチなど、Issue作業中でない時のみ提案
 if [ "$CHANGED_FILES" -ge "$THRESHOLD" ]; then
   echo ""
   echo "⚠️  [コミット提案] 変更ファイルが ${CHANGED_FILES}件 に達しました（しきい値: ${THRESHOLD}件）"
