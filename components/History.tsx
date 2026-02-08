@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { storage } from "@/lib/storage";
+import * as api from "@/lib/api/sessions";
 import { Session } from "@/types";
 import { useLanguage } from "@/lib/i18n";
 import { cn } from "@/lib/cn";
@@ -12,20 +12,40 @@ export default function History() {
   const { language, t } = useLanguage();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [streak, setStreak] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
   }, []);
 
-  const loadData = () => {
-    setSessions(storage.getSessions());
-    setStreak(storage.getStreak());
+  const loadData = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const [sessionsData, streakData] = await Promise.all([
+        api.getSessions(),
+        api.getStreak(),
+      ]);
+      setSessions(sessionsData);
+      setStreak(streakData);
+    } catch (err) {
+      console.error('Failed to load data:', err);
+      setError('Failed to load history');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm(t("history.confirm.delete"))) {
-      storage.deleteSession(id);
-      loadData();
+      try {
+        await api.deleteSession(id);
+        await loadData();
+      } catch (err) {
+        console.error('Failed to delete session:', err);
+        alert('Failed to delete session');
+      }
     }
   };
 
@@ -103,6 +123,24 @@ export default function History() {
       ),
     },
   ];
+
+  // ローディング中
+  if (isLoading) {
+    return (
+      <div className="w-full max-w-4xl flex items-center justify-center p-12">
+        <div className="text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
+
+  // エラー発生時
+  if (error) {
+    return (
+      <div className="w-full max-w-4xl flex items-center justify-center p-12">
+        <div className="text-red-500">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <motion.div

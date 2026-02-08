@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { storage } from "@/lib/storage";
+import * as api from "@/lib/api/sessions";
 import { settings } from "@/lib/settings";
 import { useLanguage } from "@/lib/i18n";
 import { CircularProgress } from "@/components/ui/CircularProgress";
@@ -31,7 +31,7 @@ export default function MeditationTimer({
     }
   }, []);
 
-  const handleComplete = useCallback(() => {
+  const handleComplete = useCallback(async () => {
     setIsRunning(false);
     setIsPaused(false);
 
@@ -41,13 +41,15 @@ export default function MeditationTimer({
         .catch((err) => console.error("Audio play failed:", err));
     }
 
-    const session = {
-      id: crypto.randomUUID(),
-      type: "meditation" as const,
-      duration: duration * 60,
-      completedAt: new Date().toISOString(),
-    };
-    storage.saveSession(session);
+    try {
+      await api.createSession({
+        type: "meditation",
+        duration: duration * 60,
+        completedAt: new Date(),
+      });
+    } catch (err) {
+      console.error("Failed to save session:", err);
+    }
     onComplete?.();
   }, [duration, onComplete]);
 
