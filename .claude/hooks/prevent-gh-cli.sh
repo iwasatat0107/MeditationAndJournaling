@@ -5,8 +5,11 @@
 INPUT=$(cat)
 COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
 
-# gh pr checks は許可（MCP に同等機能がないため）
+# 例外的に許可される gh コマンド（MCP に同等機能がないため）
+# 1. gh pr checks: CIステータス確認
 echo "$COMMAND" | grep -qE '^\s*gh\s+pr\s+checks' && exit 0
+# 2. gh pr merge --auto: Auto-merge 設定
+echo "$COMMAND" | grep -qE '^\s*gh\s+pr\s+merge\s+--auto' && exit 0
 
 # gh コマンド（GitHub CLI）のみ対象
 # gh auth, gh --version 等の管理コマンドは許可
