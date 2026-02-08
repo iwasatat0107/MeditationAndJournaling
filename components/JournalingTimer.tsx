@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { storage } from "@/lib/storage";
+import * as api from "@/lib/api/sessions";
 import { settings } from "@/lib/settings";
 import { useLanguage } from "@/lib/i18n";
 import { CircularProgress } from "@/components/ui/CircularProgress";
@@ -45,7 +45,7 @@ export default function JournalingTimer({
     }
   }, []);
 
-  const handleComplete = useCallback(() => {
+  const handleComplete = useCallback(async () => {
     setIsRunning(false);
 
     const endTime = new Date();
@@ -55,13 +55,15 @@ export default function JournalingTimer({
         )
       : duration * MAX_PAGES + breakDuration * (MAX_PAGES - 1);
 
-    const session = {
-      id: crypto.randomUUID(),
-      type: "journaling" as const,
-      duration: totalDuration,
-      completedAt: new Date().toISOString(),
-    };
-    storage.saveSession(session);
+    try {
+      await api.createSession({
+        type: "journaling",
+        duration: totalDuration,
+        completedAt: endTime,
+      });
+    } catch (err) {
+      console.error("Failed to save session:", err);
+    }
     onComplete?.();
 
     setCurrentPage(1);

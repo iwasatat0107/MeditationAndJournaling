@@ -1,10 +1,10 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import JournalingTimer from '../JournalingTimer';
-import { storage } from '@/lib/storage';
+import * as sessionsApi from '@/lib/api/sessions';
 import { settings } from '@/lib/settings';
 
 // Mock dependencies
-jest.mock('@/lib/storage');
+jest.mock('@/lib/api/sessions');
 jest.mock('@/lib/settings');
 
 describe('JournalingTimer', () => {
@@ -20,6 +20,7 @@ describe('JournalingTimer', () => {
     jest.clearAllMocks();
     jest.useFakeTimers();
     (settings.get as jest.Mock).mockReturnValue(mockSettings);
+    (sessionsApi.createSession as jest.Mock).mockResolvedValue({ id: 'test-id' });
     confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
   });
 
@@ -336,14 +337,14 @@ describe('JournalingTimer', () => {
       render(<JournalingTimer />);
       fireEvent.click(screen.getByRole('button', { name: 'Start' }));
       completeTheTimer();
-      expect(storage.saveSession).toHaveBeenCalled();
+      expect(sessionsApi.createSession).toHaveBeenCalled();
     });
 
     it('Session.type が "journaling" である', () => {
       render(<JournalingTimer />);
       fireEvent.click(screen.getByRole('button', { name: 'Start' }));
       completeTheTimer();
-      expect(storage.saveSession).toHaveBeenCalledWith(
+      expect(sessionsApi.createSession).toHaveBeenCalledWith(
         expect.objectContaining({ type: 'journaling' })
       );
     });
@@ -352,18 +353,21 @@ describe('JournalingTimer', () => {
       render(<JournalingTimer />);
       fireEvent.click(screen.getByRole('button', { name: 'Start' }));
       completeTheTimer();
-      expect(storage.saveSession).toHaveBeenCalledWith(
+      expect(sessionsApi.createSession).toHaveBeenCalledWith(
         expect.objectContaining({ duration: expect.any(Number) })
       );
     });
 
-    it('onComplete コールバックが呼ばれる', () => {
+    it('onComplete コールバックが呼ばれる', async () => {
       const onComplete = jest.fn();
       render(<JournalingTimer onComplete={onComplete} />);
       fireEvent.click(screen.getByRole('button', { name: 'Start' }));
       completeTheTimer();
+      await act(async () => {
+        await jest.runAllTimersAsync();
+      });
       expect(onComplete).toHaveBeenCalled();
-    });
+    }, 10000);
 
     it('初期状態にリセットされる', () => {
       render(<JournalingTimer />);
@@ -392,7 +396,7 @@ describe('JournalingTimer', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'End' }));
 
-      expect(storage.saveSession).toHaveBeenCalled();
+      expect(sessionsApi.createSession).toHaveBeenCalled();
     });
 
     it('確認ダイアログでOKすると、初期状態にリセットされる', () => {
@@ -412,7 +416,7 @@ describe('JournalingTimer', () => {
       fireEvent.click(screen.getByRole('button', { name: 'End' }));
 
       expect(screen.getByText("0:59")).toBeInTheDocument(); // still running
-      expect(storage.saveSession).not.toHaveBeenCalled();
+      expect(sessionsApi.createSession).not.toHaveBeenCalled();
     });
   });
 });

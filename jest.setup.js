@@ -32,3 +32,14 @@ Object.defineProperty(global, 'crypto', {
 
 // Mock window.confirm
 global.confirm = jest.fn(() => true)
+
+// Mock fetch
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve({}),
+    text: () => Promise.resolve(''),
+    status: 200,
+    statusText: 'OK',
+  })
+)

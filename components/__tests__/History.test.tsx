@@ -1,10 +1,10 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import History from '../History';
-import { storage } from '@/lib/storage';
+import * as sessionsApi from '@/lib/api/sessions';
 import { Session } from '@/types';
 
 // Mock dependencies
-jest.mock('@/lib/storage');
+jest.mock('@/lib/api/sessions');
 
 describe('History', () => {
   const mockSessions: Session[] = [
@@ -30,90 +30,108 @@ describe('History', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (storage.getSessions as jest.Mock).mockReturnValue([]);
-    (storage.getStreak as jest.Mock).mockReturnValue(0);
+    (sessionsApi.getSessions as jest.Mock).mockResolvedValue([]);
+    (sessionsApi.getDailyStats as jest.Mock).mockResolvedValue([]);
+    (sessionsApi.getStreak as jest.Mock).mockResolvedValue(0);
+    (sessionsApi.deleteSession as jest.Mock).mockResolvedValue(undefined);
   });
 
   describe('初期表示', () => {
-    it('データなし時は「No records yet」が表示される', () => {
+    it('データなし時は「No records yet」が表示される', async () => {
       render(<History />);
-      expect(screen.getByText('No records yet')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('No records yet')).toBeInTheDocument();
+      });
     });
 
-    it('データあり時はセッション一覧が表示される', () => {
-      (storage.getSessions as jest.Mock).mockReturnValue(mockSessions);
+    it('データあり時はセッション一覧が表示される', async () => {
+      (sessionsApi.getSessions as jest.Mock).mockResolvedValue(mockSessions);
       render(<History />);
-      expect(screen.queryByText('No records yet')).not.toBeInTheDocument();
-      expect(screen.getAllByText('Meditation').length).toBeGreaterThan(0);
-      expect(screen.getAllByText('Journaling').length).toBeGreaterThan(0);
+      await waitFor(() => {
+        expect(screen.queryByText('No records yet')).not.toBeInTheDocument();
+        expect(screen.getAllByText('Meditation').length).toBeGreaterThan(0);
+        expect(screen.getAllByText('Journaling').length).toBeGreaterThan(0);
+      });
     });
 
     it('初回レンダリング時にstorageからデータを読み込む', () => {
       render(<History />);
-      expect(storage.getSessions).toHaveBeenCalledTimes(1);
-      expect(storage.getStreak).toHaveBeenCalledTimes(1);
+      expect(sessionsApi.getSessions).toHaveBeenCalledTimes(1);
+      expect(sessionsApi.getStreak).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('統計カード', () => {
     beforeEach(() => {
-      (storage.getSessions as jest.Mock).mockReturnValue(mockSessions);
-      (storage.getStreak as jest.Mock).mockReturnValue(5);
+      (sessionsApi.getSessions as jest.Mock).mockResolvedValue(mockSessions);
+      (sessionsApi.getStreak as jest.Mock).mockResolvedValue(5);
     });
 
-    it('ストリーク（連続記録日数）が表示される', () => {
+    it('ストリーク（連続記録日数）が表示される', async () => {
       render(<History />);
-      const streakCard = screen.getByText('Streak').parentElement;
-      expect(streakCard).toHaveTextContent('5');
+      await waitFor(() => {
+        const streakCard = screen.getByText('Streak').parentElement;
+        expect(streakCard).toHaveTextContent('5');
+      });
     });
 
-    it('瞑想回数が正しく集計される', () => {
+    it('瞑想回数が正しく集計される', async () => {
       render(<History />);
-      const meditationCard = screen.getAllByText('Meditation').find(
-        el => el.parentElement?.className.includes('from-meditation-500')
-      )?.parentElement;
-      expect(meditationCard).toHaveTextContent('2');
+      await waitFor(() => {
+        const meditationCard = screen.getAllByText('Meditation').find(
+          el => el.parentElement?.className.includes('from-meditation-500')
+        )?.parentElement;
+        expect(meditationCard).toHaveTextContent('2');
+      });
     });
 
-    it('メモ書き回数が正しく集計される', () => {
+    it('メモ書き回数が正しく集計される', async () => {
       render(<History />);
-      const journalingCard = screen.getAllByText('Journaling').find(
-        el => el.parentElement?.className.includes('from-journaling-500')
-      )?.parentElement;
-      expect(journalingCard).toHaveTextContent('1');
+      await waitFor(() => {
+        const journalingCard = screen.getAllByText('Journaling').find(
+          el => el.parentElement?.className.includes('from-journaling-500')
+        )?.parentElement;
+        expect(journalingCard).toHaveTextContent('1');
+      });
     });
 
-    it('合計時間（分）が正しく集計される', () => {
+    it('合計時間（分）が正しく集計される', async () => {
       render(<History />);
-      const totalCard = screen.getByText('Total (min)').parentElement;
-      // 300 + 600 + 65 = 965秒 = 16分（切り捨て）
-      expect(totalCard).toHaveTextContent('16');
+      await waitFor(() => {
+        const totalCard = screen.getByText('Total (min)').parentElement;
+        // 300 + 600 + 65 = 965秒 = 16分（切り捨て）
+        expect(totalCard).toHaveTextContent('16');
+      });
     });
   });
 
   describe('セッション表示', () => {
     beforeEach(() => {
-      (storage.getSessions as jest.Mock).mockReturnValue(mockSessions);
+      (sessionsApi.getSessions as jest.Mock).mockResolvedValue(mockSessions);
     });
 
-    it('瞑想セッションは紫のバッジで表示される', () => {
+    it('瞑想セッションは紫のバッジで表示される', async () => {
       render(<History />);
-      const meditationBadges = screen.getAllByText('Meditation').filter(el => el.tagName === 'SPAN');
-      meditationBadges.forEach((badge) => {
-        expect(badge).toHaveClass('bg-meditation-100', 'text-meditation-700');
+      await waitFor(() => {
+        const meditationBadges = screen.getAllByText('Meditation').filter(el => el.tagName === 'SPAN');
+        meditationBadges.forEach((badge) => {
+          expect(badge).toHaveClass('bg-meditation-100', 'text-meditation-700');
+        });
       });
     });
 
-    it('メモ書きセッションは青のバッジで表示される', () => {
+    it('メモ書きセッションは青のバッジで表示される', async () => {
       render(<History />);
-      const journalingBadge = screen.getAllByText('Journaling').find(el => el.tagName === 'SPAN')!;
-      expect(journalingBadge).toHaveClass('bg-journaling-100', 'text-journaling-700');
+      await waitFor(() => {
+        const journalingBadge = screen.getAllByText('Journaling').find(el => el.tagName === 'SPAN')!;
+        expect(journalingBadge).toHaveClass('bg-journaling-100', 'text-journaling-700');
+      });
     });
   });
 
   describe('削除機能', () => {
     beforeEach(() => {
-      (storage.getSessions as jest.Mock).mockReturnValue(mockSessions);
+      (sessionsApi.getSessions as jest.Mock).mockResolvedValue(mockSessions);
       jest.spyOn(window, 'confirm');
     });
 
@@ -121,27 +139,33 @@ describe('History', () => {
       jest.restoreAllMocks();
     });
 
-    it('削除ボタンクリック時に確認ダイアログが表示され、キャンセルすると削除されない', () => {
+    it('削除ボタンクリック時に確認ダイアログが表示され、キャンセルすると削除されない', async () => {
       (window.confirm as jest.Mock).mockReturnValue(false);
       render(<History />);
 
-      const deleteButtons = screen.getAllByText('Delete');
-      fireEvent.click(deleteButtons[0]);
+      await waitFor(() => {
+        const deleteButtons = screen.getAllByText('Delete');
+        fireEvent.click(deleteButtons[0]);
+      });
 
       expect(window.confirm).toHaveBeenCalledWith('Delete this record?');
-      expect(storage.deleteSession).not.toHaveBeenCalled();
+      expect(sessionsApi.deleteSession).not.toHaveBeenCalled();
     });
 
-    it('削除ボタンクリック時に確認してOKすると削除される', () => {
+    it('削除ボタンクリック時に確認してOKすると削除される', async () => {
       (window.confirm as jest.Mock).mockReturnValue(true);
       render(<History />);
 
-      const deleteButtons = screen.getAllByText('Delete');
-      fireEvent.click(deleteButtons[0]);
+      await waitFor(() => {
+        const deleteButtons = screen.getAllByText('Delete');
+        fireEvent.click(deleteButtons[0]);
+      });
 
       expect(window.confirm).toHaveBeenCalledWith('Delete this record?');
-      expect(storage.deleteSession).toHaveBeenCalledWith('1');
-      expect(storage.getSessions).toHaveBeenCalledTimes(2); // 初回 + 削除後のリロード
+      expect(sessionsApi.deleteSession).toHaveBeenCalledWith('1');
+      await waitFor(() => {
+        expect(sessionsApi.getSessions).toHaveBeenCalledTimes(2); // 初回 + 削除後のリロード
+      });
     });
   });
 });
