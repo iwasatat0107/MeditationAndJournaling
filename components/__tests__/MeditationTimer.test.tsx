@@ -1,11 +1,11 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 
 import MeditationTimer from '../MeditationTimer';
-import { storage } from '@/lib/storage';
+import * as sessionsApi from '@/lib/api/sessions';
 import { settings } from '@/lib/settings';
 
 // Mock dependencies
-jest.mock('@/lib/storage');
+jest.mock('@/lib/api/sessions');
 jest.mock('@/lib/settings');
 
 describe('MeditationTimer', () => {
@@ -19,6 +19,7 @@ describe('MeditationTimer', () => {
     jest.clearAllMocks();
     jest.useFakeTimers();
     (settings.get as jest.Mock).mockReturnValue(mockSettings);
+    (sessionsApi.createSession as jest.Mock).mockResolvedValue({ id: 'test-id' });
   });
 
   afterEach(() => {
@@ -156,7 +157,7 @@ describe('MeditationTimer', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Start' }));
       fireEvent.click(screen.getByRole('button', { name: 'Stop' }));
 
-      expect(storage.saveSession).not.toHaveBeenCalled();
+      expect(sessionsApi.createSession).not.toHaveBeenCalled();
     });
 
     it('初期画面に戻る', () => {
@@ -193,7 +194,7 @@ describe('MeditationTimer', () => {
         jest.advanceTimersByTime(5 * 60 * 1000);
       });
 
-      expect(storage.saveSession).toHaveBeenCalled();
+      expect(sessionsApi.createSession).toHaveBeenCalled();
     });
 
     it('Session.type が "meditation" である', () => {
@@ -204,7 +205,7 @@ describe('MeditationTimer', () => {
         jest.advanceTimersByTime(5 * 60 * 1000);
       });
 
-      expect(storage.saveSession).toHaveBeenCalledWith(
+      expect(sessionsApi.createSession).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'meditation',
         })
@@ -219,14 +220,14 @@ describe('MeditationTimer', () => {
         jest.advanceTimersByTime(5 * 60 * 1000);
       });
 
-      expect(storage.saveSession).toHaveBeenCalledWith(
+      expect(sessionsApi.createSession).toHaveBeenCalledWith(
         expect.objectContaining({
           duration: 5 * 60,
         })
       );
     });
 
-    it('onComplete コールバックが呼ばれる', () => {
+    it('onComplete コールバックが呼ばれる', async () => {
       const onComplete = jest.fn();
       render(<MeditationTimer onComplete={onComplete} />);
       fireEvent.click(screen.getByRole('button', { name: 'Start' }));
@@ -235,8 +236,12 @@ describe('MeditationTimer', () => {
         jest.advanceTimersByTime(5 * 60 * 1000);
       });
 
+      await act(async () => {
+        await jest.runAllTimersAsync();
+      });
+
       expect(onComplete).toHaveBeenCalled();
-    });
+    }, 10000);
   });
 
   describe('設定変更の反映', () => {
