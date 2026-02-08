@@ -29,41 +29,107 @@
 4. **ローカルの理想状態** — タスク終了後は `main` と `develop` の2つのみ残す。
 5. **差分の解消** — 作業終了時は `git status` で "working tree clean" の状態にする。
 
-## PRマージの運用ルール
+## PRマージの運用ルール（Auto-merge）
 
-PRをマージする際は、以下の手順を**必ず**守ること：
+PRを作成後、**GitHub Auto-merge** を使用してCIが自動的に完了を待ってマージする。
 
-### 1. CIステータスの確認
+### 1. PR作成（GitHub MCP）
+```
+mcp__github__create_pull_request
+```
+- タイトル、本文は必ず日本語で記述
+- ベースブランチ: `develop`（または `main`）
+
+### 2. Auto-merge 有効化（即座に実行）
 ```bash
+gh pr merge --auto --squash <PR番号>
+```
+- `--auto`: CIが通過したら自動マージ
+- `--squash`: Squash merge（コミット履歴を1つにまとめる）
+- この時点では CI はまだ実行中でも OK
+
+### 3. Issue クローズ + ブランチ削除（即座に実行）
+```bash
+# GitHub MCP で Issue をクローズ
+mcp__github__update_issue (state: "closed")
+
+# ローカルブランチを削除
+git checkout develop
+git pull origin develop
+git branch -d feature/issue-X-description
+```
+
+### Auto-merge の仕組み
+
+1. **PR作成時**: CIが自動的に開始（test, Vercel）
+2. **Auto-merge 設定時**: GitHub が CI完了を監視
+3. **CI通過時**: 自動的にマージ（AIは待機不要）
+4. **CI失敗時**: Auto-merge はキャンセルされ、手動で修正が必要
+
+### CI失敗時の対応フロー
+
+Auto-merge 設定後にCIが失敗した場合の詳細フロー：
+
+#### 1. CI失敗の通知
+- GitHub がユーザーに通知（メール/Web通知）
+- AI は既に次のタスクに進んでいる（待機していない）
+
+#### 2. ユーザーの対応
+```
+「PR #X の CI が失敗しています。修正してください」と AI に依頼
+```
+
+#### 3. AI の修正フロー
+```bash
+# ステップ1: 失敗したブランチにチェックアウト
+git fetch origin
+git checkout feature/issue-X-description
+
+# ステップ2: CI エラーを確認
 gh pr checks <PR番号>
-```
-- すべてのチェックが `pass` になるまで待つ
-- `pending` の場合は待機（30-90秒間隔で再確認）
-- `fail` の場合はエラーを修正してから再プッシュ
+# 出力例:
+# test    fail    1m30s    https://github.com/.../actions/runs/...
+# Vercel  pass    45s      https://vercel.com/...
 
-### 2. マージ可能性の確認
-```bash
-gh pr view <PR番号> --json mergeable,mergeStateStatus
-```
-- `mergeable`: "MERGEABLE" であることを確認
-- `mergeStateStatus`: "CLEAN" または "UNSTABLE" であることを確認
-- "CONFLICTING" の場合はコンフリクトを解決してから再プッシュ
+# ステップ3: エラー内容を分析
+# - テスト失敗: テストコードまたは実装を修正
+# - 型エラー: TypeScript エラーを修正
+# - ビルドエラー: ビルド設定や依存関係を修正
+# - Lint エラー: コードスタイルを修正
 
-### 3. マージ実行
-上記1-2の条件をクリアした後、GitHub MCPでマージを実行：
-```
-mcp__github__merge_pull_request
+# ステップ4: 修正をコミット・プッシュ
+git add .
+git commit -m "fix: CI エラーを修正
+
+- テスト失敗を修正
+- 型エラーを解消
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+git push origin feature/issue-X-description
+
+# ステップ5: CI が自動的に再実行される
+# （Auto-merge 設定は保持されているので再設定不要）
+
+# ステップ6: CI 通過後、GitHub が自動的にマージ
 ```
 
-### 4. マージ失敗時の対応
-- エラーメッセージを確認し、原因を特定
-- コンフリクトの場合: ローカルで解決してプッシュ後、ステップ1から再実行
-- その他のエラー: ユーザーに報告
+#### 4. Auto-merge の状態管理
+- **CI失敗時**: Auto-merge は**キャンセルされず待機状態**
+- **修正プッシュ時**: CI が再実行される
+- **CI通過時**: Auto-merge が自動的にマージを実行
+- **再設定不要**: 一度設定した Auto-merge は有効なまま
+
+#### 5. 注意事項
+- ✅ Auto-merge 再設定は不要（一度設定すれば保持される）
+- ✅ 修正後は自動マージ（手動マージ不要）
+- ⚠️ ユーザーが手動で AI に修正依頼する必要がある
+- ⚠️ AI は次のタスクに進んでいるため、戻る必要がある
 
 ### 重要な注意事項
-- **絶対に CIテストが通る前にマージしない**
-- **マージ可能性の確認を省略しない**
-- マージ後は必ずローカルの `main` と `develop` を更新
+- **Auto-merge は PR作成直後に設定**（CIの完了を待たない）
+- **AIは待機せず、すぐに次のタスクへ進む**
+- マージ後は必ずローカルの `develop` を更新（`git pull origin develop`）
+- `gh pr merge --auto` は **例外的に許可された gh CLI コマンド**（GitHub MCP に同等機能がないため）
 
 ## Issue クローズの扱い
 

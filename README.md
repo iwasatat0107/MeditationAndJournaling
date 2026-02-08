@@ -28,9 +28,9 @@
 │                                                         │
 │   ┌──────────────┐   ┌─────────────────────────┐        │
 │   │ middleware.ts │   │       API Routes         │        │
-│   │ (認証チェック) │   │  POST /api/auth/signup  │        │
-│   └──────────────┘   │  [...nextauth] handler  │        │
-│                      └───────────┬─────────────┘        │
+│   │ ・認証チェック │   │  POST /api/auth/signup  │        │
+│   │ ・Rate Limit  │   │  [...nextauth] handler  │        │
+│   └──────────────┘   └───────────┬─────────────┘        │
 │                                  ▼                       │
 │                      ┌─────────────────────┐             │
 │                      │   NextAuth.js v5    │             │
@@ -60,6 +60,7 @@
 | スタイル | Tailwind CSS（インラインクラスのみ） |
 | アニメーション | Framer Motion |
 | 認証 | NextAuth.js v5 (beta.30) — JWT セッション |
+| Rate Limiting | @upstash/ratelimit（本番）、メモリベース（開発） |
 | データベース | Supabase PostgreSQL |
 | ORM | Drizzle ORM |
 | バリデーション | Zod |
@@ -91,6 +92,13 @@ npm run dev
 | `DATABASE_URL` | ✅ | Supabase PostgreSQL の接続文字列 |
 | `NEXTAUTH_URL` | ✅ | アプリの公開URL（`https://` プレフィックス必須） |
 | `NEXTAUTH_SECRET` | ✅ | NextAuth のシークレット（base64） |
+| `UPSTASH_REDIS_REST_URL` | ⚪ | Upstash Redis URL（本番環境推奨、開発環境ではメモリベース） |
+| `UPSTASH_REDIS_REST_TOKEN` | ⚪ | Upstash Redis トークン（本番環境推奨） |
+
+**Rate Limiting**:
+- 環境変数が設定されている場合: Upstash Redis ベース（本番環境）
+- 環境変数がない場合: メモリベース（開発環境）
+- 制限: `/api/auth/signup` (10req/min), `/api/auth/*` (20req/min)
 
 ---
 
