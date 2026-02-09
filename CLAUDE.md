@@ -284,6 +284,10 @@ __tests__/                          # ミドルウェアテスト（1ファイ�
 
 詳細は `.claude/rules/coding-style.md` を参照。
 
+## Serena MCP 詳細ルール
+
+詳細は `.claude/rules/serena-mcp.md` を参照。
+
 ---
 
 ## テスト
@@ -341,6 +345,135 @@ npm run ci:usage
   3. `mcp__github__update_issue` で Issue をクローズ
   4. ローカルブランチを削除（`git branch -d`）
   5. **AIは待機せず、次のタスクへ進む**（CIは GitHub が自動監視）
+
+---
+
+## Serena MCP 利用ルール
+
+**基本方針**: コードベースの調査・分析には**必ず Serena MCP を使用**すること。
+
+### 禁止事項
+
+以下の行為は**絶対に禁止**：
+
+❌ **`Read` ツールでソースファイル全体を読み込む**
+  - 理由: トークン消費が多い、必要のない情報まで読み込む
+  - 例外: 設定ファイル（`package.json`, `.env.example` 等）、ドキュメント（`README.md`, `CLAUDE.md` 等）
+
+❌ **目的なくファイル内容を取得する**
+  - 理由: コンテキストを圧迫し、重要な情報が埋もれる
+  - 代わりに: まず `get_symbols_overview` でシンボル概要を取得
+
+❌ **Serena MCP で取得可能な情報を他の方法で取得する**
+  - 理由: Serena MCP はシンボル単位で効率的に情報を取得できる
+  - 代わりに: `find_symbol`, `search_for_pattern`, `find_referencing_symbols` を活用
+
+### 推奨ワークフロー
+
+#### Issue 着手時の調査フロー
+
+```
+1. Issue の内容を把握
+   ↓
+2. 関連するファイルを特定（Glob, find_file）
+   ↓
+3. ファイルのシンボル概要を取得（get_symbols_overview）
+   ↓
+4. 必要なシンボルのみを取得（find_symbol with include_body=True）
+   ↓
+5. 参照元・参照先を調査（find_referencing_symbols）
+   ↓
+6. 実装方針を決定
+```
+
+**具体例**:
+```
+# ❌ 悪い例
+Read components/MeditationTimer.tsx  # ファイル全体を読み込む
+
+# ✅ 良い例
+mcp__serena__get_symbols_overview relative_path="components/MeditationTimer.tsx"
+↓ シンボル概要を確認
+mcp__serena__find_symbol name_path_pattern="MeditationTimer" include_body=True depth=1
+↓ 必要なメソッドのみを取得
+```
+
+### Serena MCP ツール一覧
+
+#### ファイル・ディレクトリ操作
+
+- **`list_dir`** — ディレクトリ一覧取得（再帰的スキャン可能）
+- **`find_file`** — ファイル検索（ワイルドカード対応）
+
+#### シンボル解析
+
+- **`get_symbols_overview`** — ファイルのシンボル概要取得（**最初に呼ぶべき**）
+- **`find_symbol`** — シンボル検索（名前パス、深さ指定可能）
+  - `include_body=True` でコード本体を取得
+  - `depth=1` で子要素も取得（例: クラスのメソッド一覧）
+- **`find_referencing_symbols`** — 参照元検索（どこから呼ばれているか）
+
+#### コード検索
+
+- **`search_for_pattern`** — 正規表現パターン検索（Grep より柔軟）
+  - `context_lines_before`, `context_lines_after` で前後の行も取得
+  - `paths_include_glob`, `paths_exclude_glob` でファイル絞り込み
+
+#### コード編集
+
+- **`replace_symbol_body`** — シンボル本体の置換
+- **`insert_after_symbol`** — シンボルの後に挿入
+- **`insert_before_symbol`** — シンボルの前に挿入
+- **`rename_symbol`** — シンボル名の変更（コードベース全体）
+
+#### メモリ管理
+
+- **`write_memory`** — プロジェクト情報をメモリに保存
+- **`read_memory`** — メモリから情報を読み取り
+- **`list_memories`** — メモリ一覧取得
+- **`edit_memory`** — メモリの編集
+- **`delete_memory`** — メモリの削除
+
+### Read ツールの使用が許可されるケース
+
+以下の場合のみ `Read` ツールの使用が許可される：
+
+✅ **設定ファイル**
+  - `package.json`, `tsconfig.json`, `jest.config.js`, `playwright.config.ts`
+  - `.env.example`, `drizzle.config.ts`, `vercel.json`
+
+✅ **ドキュメント**
+  - `README.md`, `CLAUDE.md`, `.claude/rules/*.md`
+
+✅ **テストファイル**（必要な場合のみ）
+  - `__tests__/*.test.ts`, `*.test.tsx`
+
+✅ **非コードファイル**
+  - `public/`, `docs/`, `.github/workflows/*.yml`
+
+✅ **Serena MCP で取得できない情報**
+  - 画像ファイル、PDF ファイル
+  - Jupyter Notebook（`.ipynb`）
+
+### 効率的な調査のコツ
+
+1. **段階的に詳細化する**
+   - まず `get_symbols_overview` で全体像を把握
+   - 次に `find_symbol` で必要な部分のみ取得
+   - 最後に `find_referencing_symbols` で関連コードを追跡
+
+2. **検索を絞り込む**
+   - `relative_path` パラメータでファイル・ディレクトリを限定
+   - `include_kinds`, `exclude_kinds` でシンボル種別を絞り込み
+   - `substring_matching=True` で部分一致検索
+
+3. **コンテキストを意識する**
+   - `depth` パラメータで必要な階層のみ取得
+   - `context_lines_before/after` で前後の行も確認
+
+4. **メモリを活用する**
+   - 調査結果を `write_memory` で保存
+   - 次回以降の作業で `read_memory` で参照
 
 ---
 
