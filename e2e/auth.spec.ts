@@ -22,7 +22,7 @@ test.describe('認証フロー', () => {
     await expect(page).toHaveURL('/', { timeout: 10000 });
 
     // Meditation タブが表示されることを確認
-    await expect(page.locator('text=Meditation')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Meditation' })).toBeVisible();
   });
 
   test('ログインフロー', async ({ page }) => {
@@ -48,7 +48,7 @@ test.describe('認証フロー', () => {
 
     // ログイン成功後、ホームページにリダイレクト
     await expect(page).toHaveURL('/', { timeout: 10000 });
-    await expect(page.locator('text=Meditation')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Meditation' })).toBeVisible();
   });
 
   test('ログインエラー（存在しないユーザー）', async ({ page }) => {
