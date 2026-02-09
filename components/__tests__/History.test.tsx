@@ -54,10 +54,12 @@ describe('History', () => {
       });
     });
 
-    it('初回レンダリング時にstorageからデータを読み込む', () => {
+    it('初回レンダリング時にstorageからデータを読み込む', async () => {
       render(<History />);
-      expect(sessionsApi.getSessions).toHaveBeenCalledTimes(1);
-      expect(sessionsApi.getStreak).toHaveBeenCalledTimes(1);
+      await waitFor(() => {
+        expect(sessionsApi.getSessions).toHaveBeenCalledTimes(1);
+        expect(sessionsApi.getStreak).toHaveBeenCalledTimes(1);
+      });
     });
   });
 
@@ -143,27 +145,25 @@ describe('History', () => {
       (window.confirm as jest.Mock).mockReturnValue(false);
       render(<History />);
 
-      await waitFor(() => {
-        const deleteButtons = screen.getAllByText('Delete');
-        fireEvent.click(deleteButtons[0]);
-      });
+      const deleteButtons = await screen.findAllByText('Delete');
+      fireEvent.click(deleteButtons[0]);
 
-      expect(window.confirm).toHaveBeenCalledWith('Delete this record?');
-      expect(sessionsApi.deleteSession).not.toHaveBeenCalled();
+      await waitFor(() => {
+        expect(window.confirm).toHaveBeenCalledWith('Delete this record?');
+        expect(sessionsApi.deleteSession).not.toHaveBeenCalled();
+      });
     });
 
     it('削除ボタンクリック時に確認してOKすると削除される', async () => {
       (window.confirm as jest.Mock).mockReturnValue(true);
       render(<History />);
 
-      await waitFor(() => {
-        const deleteButtons = screen.getAllByText('Delete');
-        fireEvent.click(deleteButtons[0]);
-      });
+      const deleteButtons = await screen.findAllByText('Delete');
+      fireEvent.click(deleteButtons[0]);
 
-      expect(window.confirm).toHaveBeenCalledWith('Delete this record?');
-      expect(sessionsApi.deleteSession).toHaveBeenCalledWith('1');
       await waitFor(() => {
+        expect(window.confirm).toHaveBeenCalledWith('Delete this record?');
+        expect(sessionsApi.deleteSession).toHaveBeenCalledWith('1');
         expect(sessionsApi.getSessions).toHaveBeenCalledTimes(2); // 初回 + 削除後のリロード
       });
     });
