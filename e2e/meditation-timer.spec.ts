@@ -67,7 +67,7 @@ test.describe('瞑想タイマー', () => {
     await page.waitForTimeout(2000);
 
     // End ボタンをクリック
-    await page.click('button:has-text("End")');
+    await page.click('button[data-testid="stop-button"]');
 
     // 確認ダイアログが表示される（注: ブラウザのダイアログはPlaywrightで自動的にOKされる）
 

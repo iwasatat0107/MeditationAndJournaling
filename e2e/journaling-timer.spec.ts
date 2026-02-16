@@ -98,7 +98,7 @@ test.describe('メモ書きタイマー', () => {
     await page.waitForTimeout(2000);
 
     // End ボタンをクリック
-    await page.click('button:has-text("End")');
+    await page.click('button[data-testid="stop-button"]');
 
     // 初期状態に戻る
     await expect(page.locator('button:has-text("Start")')).toBeVisible({

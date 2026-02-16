@@ -60,11 +60,15 @@ test.describe('認証フロー', () => {
     await page.fill('input#password', 'WrongPassword123!');
     await page.click('button[type="submit"]');
 
-    // エラーメッセージが表示される（日本語表示の可能性もある）
+    // エラーメッセージが表示される（英語または日本語）
     await expect(
-      page.locator('text=Invalid email or password, text=メールアドレスまたはパスワードが正しくありません')
+      page.locator('.text-red-600, .text-red-400')
     ).toBeVisible({
       timeout: 5000,
     });
+
+    // エラーメッセージのテキストを確認
+    const errorText = await page.locator('.text-red-600, .text-red-400').textContent();
+    expect(errorText).toMatch(/Invalid email or password|メールアドレスまたはパスワードが正しくありません/);
   });
 });
