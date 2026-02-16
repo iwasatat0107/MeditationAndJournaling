@@ -122,6 +122,16 @@ export async function rateLimit(
   identifier: string,
   config: RateLimitConfig
 ): Promise<RateLimitResult> {
+  // E2Eテスト環境では Rate Limiting をバイパス
+  if (process.env.E2E_TEST === 'true') {
+    return {
+      success: true,
+      limit: config.limit,
+      remaining: config.limit,
+      reset: Date.now() + 60000,
+    };
+  }
+
   const hasUpstashConfig =
     process.env.UPSTASH_REDIS_REST_URL &&
     process.env.UPSTASH_REDIS_REST_TOKEN;

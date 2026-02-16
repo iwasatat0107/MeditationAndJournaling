@@ -40,9 +40,8 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://ci:ci@localhost:5432/ci_test' }}
 
   e2e:
-    # 一時的にスキップ（E2E テストの修正が必要）
     # main へのPRのみで実行（コスト削減）
-    if: false
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
     runs-on: ubuntu-latest
 
     steps:
@@ -64,6 +63,7 @@ jobs:
       - name: Run E2E tests
         run: npm run test:e2e
         env:
+          E2E_TEST: 'true'
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET || 'test-secret-for-ci-only-min-32-chars-long' }}
           NEXTAUTH_URL: 'http://localhost:3000'
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
