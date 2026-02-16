@@ -64,6 +64,7 @@ jobs:
       - name: Run E2E tests
         run: npm run test:e2e
         env:
+          E2E_TEST: 'true'
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET || 'test-secret-for-ci-only-min-32-chars-long' }}
           NEXTAUTH_URL: 'http://localhost:3000'
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
